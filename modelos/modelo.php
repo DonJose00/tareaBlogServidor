@@ -66,7 +66,7 @@ class modelo {
     ];
     //Realizamos la consulta...
     try {  //Definimos la instrucción SQL  
-      $sql = "SELECT * FROM usuarios";
+      $sql = "SELECT * FROM entradas";
       // Hacemos directamente la consulta al no tener parámetros
       $resultsquery = $this->conexion->query($sql);
       //Supervisamos si la inserción se realizó correctamente... 
@@ -100,7 +100,7 @@ class modelo {
         //Inicializamos la transacción
         $this->conexion->beginTransaction();
         //Definimos la instrucción SQL parametrizada 
-        $sql = "DELETE FROM usuarios WHERE id=:id";
+        $sql = "DELETE FROM entradas WHERE id=:id";
         $query = $this->conexion->prepare($sql);
         $query->execute(['id' => $id]);
         //Supervisamos si la eliminación se realizó correctamente... 

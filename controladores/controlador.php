@@ -3,8 +3,7 @@
 /**
  * Incluimos el modelo para poder acceder a su clase y a los métodos que implementa
  */
-require_once 'modelos/modelo.php';
-
+require_once 'C:\xampp\htdocs\tareaBlogServidor\modelos\modelo.php';
 /**
  * Clase controlador que será la encargada de obtener, para cada tarea, los datos
  * necesarios de la base de datos, y posteriormente, tras su proceso de elaboración,

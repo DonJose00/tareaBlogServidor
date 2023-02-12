@@ -29,7 +29,7 @@ class modelo {
    */
   public function conectar() {
     try {
-      $this->conexion = new PDO("mysql:host=$this->host;dbname=$this->db", $this->user, $this->pass);
+      $this->conexion = new PDO("mysql:host=$this->host;port=3307;dbname=$this->db", $this->user, $this->pass);
       $this->conexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
       return TRUE;
     } catch (PDOException $ex) {
@@ -65,10 +65,9 @@ class modelo {
         "error" => NULL
     ];
     //Realizamos la consulta...
-    try {  //Definimos la instrucción SQL  
-      $sql = "SELECT * FROM entradas";
-      // Hacemos directamente la consulta al no tener parámetros
-      $resultsquery = $this->conexion->query($sql);
+    try { 
+      $resultsquery = $this->conexion->prepare("SELECT * FROM entradas");
+      $resultsquery->execute();
       //Supervisamos si la inserción se realizó correctamente... 
       if ($resultsquery) :
         $return["correcto"] = TRUE;

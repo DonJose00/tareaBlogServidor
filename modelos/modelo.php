@@ -133,15 +133,16 @@ class modelo {
       //Inicializamos la transacción
       $this->conexion->beginTransaction();
       //Definimos la instrucción SQL parametrizada 
-      $sql = "INSERT INTO usuarios(nombre,password,email,imagen) VALUES (:nombre,:password,:email , :imagen)";
+      $sql = "INSERT INTO entradas(id,titulo,imagen,descripcion,fecha) VALUES (:id,:titulo,:imagen,:descripcion,:fecha)";
       // Preparamos la consulta...
       $query = $this->conexion->prepare($sql);
       // y la ejecutamos indicando los valores que tendría cada parámetro
       $query->execute([
-          'nombre' => $datos["nombre"],
-          'password' => $datos["password"],
-          'email' => $datos["email"],
-          'imagen' => $datos["imagen"]
+        'id' => $datos["id"],
+        'titulo' => $datos["titulo"],
+        "imagen" => $datos["imagen"],
+        'descripcion' => $datos["descripcion"],
+        'fecha' => $datos["fecha"]
       ]); //Supervisamos si la inserción se realizó correctamente... 
       if ($query) {
         $this->conexion->commit(); // commit() confirma los cambios realizados durante la transacción

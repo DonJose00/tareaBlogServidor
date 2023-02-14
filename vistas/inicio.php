@@ -8,32 +8,43 @@
 
 <body class="cuerpo">
 
+  <?php require_once 'modelos/modelo.php'; ?>
   <!-- NAVBAR -->
-
-
-  <nav class="navbar navbar-expand-lg bg-light">
-    <a class="navbar-brand" href="#">Barra de navegación</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
-      aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        <li> <a href="index.php?accion=listado"> Listar usuarios</a></li>
-        <li> <a href="index.php?accion=adduser"> Añadir usuario</a></li>
-      </ul>
-      <a class="navbar-brand" href="#">
-        <img src="img/logoF1.png" class="me-2" height="20" alt="MDB Logo" loading="lazy" />
-        <small>Jcoronel Web</small>
-      </a>
-      <form class="d-flex" role="search">
-        <input class="form-control me-2" type="search" placeholder="Buscar..." aria-label="Search" />
-        <button class="btn btn-outline-success" type="submit">
-          Buscar
+  <div class="container-fluid">
+    <nav class="navbar navbar-expand-lg bg-light">
+      <div class="container-fluid">
+        <a class="navbar-brand">Blog F1 Actualidad</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+          aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
         </button>
-      </form>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="#">Home</a>
+            </li>
+            <li class="nav-item"> <a class="nav-link" href="index.php?accion=listado">Listar usuarios</a></li>
+            <li class="nav-item"> <a class="nav-link" href="index.php?accion=adduser"> Añadir usuarios</a></li>
+            <form class="d-flex" role="search">
+              <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+              <button class="btn btn-outline-success" type="submit">Buscar</button>
+            </form>
+            <li class="nav-item"> <a class="nav-link" href="../includes/descargarPDF.php">Descargar PDF</a></li>
+            <li class="nav-item"> <a class="nav-link" href="vistas/login.php"> Login</a></li>
+            <li class="nav-item"> <a class="nav-link" href="index.php?accion=cerrarSesion"> Cerrar Sesion</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </div>
+  <div class="contenedor">
+    <div class="post">
+      <article>
+        <h2 class="titulo">Titulo el articulo</h2>
+        <p class="fecha">1 Enero de 2016</p>
+      </article>
     </div>
-  </nav>
+  </div>
 </body>
 <?php include 'includes/footer.php' ?>
 

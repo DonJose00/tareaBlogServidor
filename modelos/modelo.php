@@ -29,7 +29,7 @@ class modelo {
    */
   public function conectar() {
     try {
-      $this->conexion = new PDO("mysql:host=$this->host;dbname=$this->db", $this->user, $this->pass);
+      $this->conexion = new PDO("mysql:host=$this->host;port=3307;dbname=$this->db", $this->user, $this->pass);
       $this->conexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
       return TRUE;
     } catch (PDOException $ex) {
@@ -65,10 +65,9 @@ class modelo {
         "error" => NULL
     ];
     //Realizamos la consulta...
-    try {  //Definimos la instrucción SQL  
-      $sql = "SELECT * FROM entradas";
-      // Hacemos directamente la consulta al no tener parámetros
-      $resultsquery = $this->conexion->query($sql);
+    try { 
+      $resultsquery = $this->conexion->prepare("SELECT * FROM entradas");
+      $resultsquery->execute();
       //Supervisamos si la inserción se realizó correctamente... 
       if ($resultsquery) :
         $return["correcto"] = TRUE;
@@ -134,15 +133,16 @@ class modelo {
       //Inicializamos la transacción
       $this->conexion->beginTransaction();
       //Definimos la instrucción SQL parametrizada 
-      $sql = "INSERT INTO usuarios(nombre,password,email,imagen) VALUES (:nombre,:password,:email , :imagen)";
+      $sql = "INSERT INTO entradas(id,titulo,imagen,descripcion,fecha) VALUES (:id,:titulo,:imagen,:descripcion,:fecha)";
       // Preparamos la consulta...
       $query = $this->conexion->prepare($sql);
       // y la ejecutamos indicando los valores que tendría cada parámetro
       $query->execute([
-          'nombre' => $datos["nombre"],
-          'password' => $datos["password"],
-          'email' => $datos["email"],
-          'imagen' => $datos["imagen"]
+        'id' => $datos["id"],
+        'titulo' => $datos["titulo"],
+        "imagen" => $datos["imagen"],
+        'descripcion' => $datos["descripcion"],
+        'fecha' => $datos["fecha"]
       ]); //Supervisamos si la inserción se realizó correctamente... 
       if ($query) {
         $this->conexion->commit(); // commit() confirma los cambios realizados durante la transacción

@@ -116,6 +116,7 @@ class controlador
 
     public function adduser()
     {
+        echo "hola";
         // Array asociativo que almacenará los mensajes de error que se generen por cada campo
         $errores = array();
         $id = "";
@@ -125,12 +126,6 @@ class controlador
 
         // validar el formulario cuando se envía
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
-            // validar campo titulo
-            if (empty($_POST["id"])) {
-                $errores["id"] = "Error: El id es obligatorio";
-            } else {
-                $titulo = $_POST["id"];
-            }
             // validar campo titulo
             if (empty($_POST["titulo"])) {
                 $errores["titulo"] = "Error: El título es obligatorio";
@@ -167,7 +162,6 @@ class controlador
             // Si no se han producido errores realizamos el registro del usuario
             if (count($errores) == 0) {
                 $resultModelo = $this->modelo->adduser([
-                    'id' => $id,
                     'titulo' => $titulo,
                     "imagen" => $imagen,
                     'descripcion' => $descripcion,
@@ -190,6 +184,7 @@ class controlador
                     "mensaje" => "Datos de registro de entrada erróneos!! :(",
                 ];
             }
+            var_dump($this->mensajes);
         }
 
         $parametros = [
@@ -205,6 +200,7 @@ class controlador
         ];
         //Visualizamos la vista asociada al registro de usuarios
         include_once 'vistas/adduser.php';
+        
     }
 
     /**
@@ -316,5 +312,15 @@ class controlador
         //Mostramos la vista actuser
         include_once 'vistas/actuser.php';
     }
+
+    // public function logout($id,$user,$role){
+    //     session_start(); // Activamos el uso de sesiones
+    //     session_unset(); // Libera todas las variables de sesión
+    //     session_destroy(); // Destruimos la sesión
+
+    //    header("Location: ../index.php");
+    //    exit();
+
+    // }
 
 }

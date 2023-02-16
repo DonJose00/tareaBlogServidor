@@ -60,7 +60,6 @@ if (isset($_POST[('enviar')])) {
 <html>
 <head lang="es">
     <?php require 'includes/head.php'; ?>
-    <link rel="stylesheet" href="../css/misestilos.css">
 </head>
 <body>
     <div class="container cuerpo text-center">
@@ -72,14 +71,52 @@ if (isset($_POST[('enviar')])) {
     <div class="container my-3">
         <div class="row">
             <div class="col-sm-12 col-md-4 col-lg-4 col-xl-4 py-4 color-fondo">
-                <form  class="formLogin" action="login_check.php" method="POST" enctype="multipart/form-data">
+                <i class="fa-solid fa-user"></i>
+                <h1>LOGIN DE USUARIO</h1>
+                <form action="index.php" method="POST" enctype="multipart/form-data">
                     <div class="mb-3">
                         <label for="usuario" class="form-label">User</label>
-                        <input type="text" class="form-control" name="usuario">
+                        <input type="text" class="form-control" name="usuario"
+                            value="<?php if (isset($_COOKIE['usuario'])) {
+                                echo $_COOKIE['usuario'];
+                            } ?>">
+                        <!-- Si existe le asignamos como valor el valor de usuario -->
                     </div>
                     <div class="mb-3">
                         <label for="password" class="form-label">Password</label>
-                        <input type="password" class="form-control" name="password">
+                        <input type="password" class="form-control" name="password"
+                            value="<?php if (isset($_COOKIE['password'])) {
+                                echo $_COOKIE['password'];
+                            } ?>"><!-- Si existe le asignamos como valor el valor de password -->
+                    </div>
+                    <div class="col-12">
+                        <div class="form-check">
+                            <label><input type="checkbox" name="recuerdo" <?php if (isset($_COOKIE['recuerdame'])) {
+                                echo " checked";
+                            } ?>>
+                                Recuérdame :)
+                            </label>
+                            <br>
+                            <label><input type="checkbox" name="abierta" <?php if (isset($_COOKIE['abierta'])) {
+                                echo " checked";
+                            } ?>>
+                                Mantener la sesión abierta…
+                            </label>
+                        </div>
+                        <!-- Alerta -->
+                        <?php
+                        if (isset($_GET['error'])) {
+                            if ($_GET['error'] == "datos") {
+                                echo '<div class="alert alert-danger" role="alert">
+                        Tu usuario o/y tu contraseña no son correctos!! :(
+                        </div>';
+                            } elseif ($_GET['error'] == "fuera") {
+                                echo '<div class="alert alert-danger" role="alert">
+                            No puede acceder directamente en esta página, ha de loguearse!! 
+                        </div>';
+                            }
+                        }
+                        ?>
                     </div>
                     <button type="submit" class="btn btn-primary" name="enviar">Enviar</button>
                 </form>

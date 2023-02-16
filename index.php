@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Script que se encarga de redirigir las rutas de los enlaces pulsado en la
  * vista del listado. A él deberá llegar el nombre de la acción y, si fuese
@@ -7,7 +8,7 @@
  * de lo contrario tendríamos que especificar los controladores en ficheros 
  * diferentes
  */
-require_once 'C:\xampp\htdocs\tareaBlogServidor\controladores\controlador.php';
+require_once 'controladores\controlador.php';
 //Definimos un objeto controlador
 $controlador = new controlador();
 

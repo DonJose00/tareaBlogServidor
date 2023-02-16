@@ -133,12 +133,13 @@ class modelo {
       //Inicializamos la transacción
       $this->conexion->beginTransaction();
       //Definimos la instrucción SQL parametrizada 
-      $sql = "INSERT INTO entradas(id,titulo,imagen,descripcion,fecha) VALUES (:id,:titulo,:imagen,:descripcion,:fecha)";
+      $sql = "INSERT INTO entradas VALUES (:usuario,:categoria,:titulo,:imagen,:descripcion,:fecha)";
       // Preparamos la consulta...
       $query = $this->conexion->prepare($sql);
       // y la ejecutamos indicando los valores que tendría cada parámetro
       $query->execute([
-        'id' => $datos["id"],
+        'usuario' => 1,
+        "categoria" => 1,
         'titulo' => $datos["titulo"],
         "imagen" => $datos["imagen"],
         'descripcion' => $datos["descripcion"],

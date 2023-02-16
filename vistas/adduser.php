@@ -29,7 +29,7 @@ if (!isset($_SESSION['usuario']) && (isset($_COOKIE['abierta']))) { //Si no exis
       <?php endforeach; ?>
 
       <div class="addEntradas">
-        <form action="index.php?accion=adduser" method="post" enctype="multipart/form-data">
+        <form action="controladores/controlador.php?accion=adduser" method="post" enctype="multipart/form-data">
           <label for="titulo">Título:</label><br>
           <input class="form-control" type="text" id="titulo" name="titulo"><br>
 

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Incluimos el modelo para poder acceder a su clase y a los métodos que implementa
+ * Incluimos el modelo para poder acceder a su clase y a los métodos que implementa 
  */
 require_once 'C:\xampp\htdocs\tareaBlogServidor\modelos\modelo.php';
 /**
@@ -64,7 +64,6 @@ class controlador
                     if (empty($resultadoModelo['datos'])) {
                         $parametrosVistas['mensajes']['tipo'] = 'alert alert-danger text-center';
                         $parametrosVistas['mensajes']['mensaje'] = "Usuario / constraseña incorrecto";
-
                     } else {
                         $login = true;
                     }
@@ -78,7 +77,6 @@ class controlador
                         'mensaje' => 'Usuario o Contraseña incorrectos',
                     ];
                     $parametrosVistas['mensajes'] = $this->mensajes;
-
                 }
             }
         } //post acceder
@@ -105,14 +103,14 @@ class controlador
         // Si la consulta se realizó correctamente transferimos los datos obtenidos
         // de la consulta del modelo ($resultModelo["datos"]) a nuestro array parámetros
         // ($parametros["datos"]), que será el que le pasaremos a la vista para visualizarlos
-        if ($resultModelo["correcto"]){
+        if ($resultModelo["correcto"]) {
             $parametros["datos"] = $resultModelo["datos"];
             //Definimos el mensaje para el alert de la vista de que todo fue correctamente
             $this->mensajes[] = [
                 "tipo" => "success",
                 "mensaje" => "El listado se realizó correctamente",
             ];
-        }else{
+        } else {
             //Definimos el mensaje para el alert de la vista de que se produjeron errores al realizar el listado
             $this->mensajes[] = [
                 "tipo" => "danger",
@@ -193,12 +191,12 @@ class controlador
             $resultModelo = $this->modelo->deluser($id);
             //Analizamos el valor devuelto por el modelo para definir el mensaje a
             //mostrar en la vista listado
-            if ($resultModelo["correcto"]):
+            if ($resultModelo["correcto"]) :
                 $this->mensajes[] = [
                     "tipo" => "success",
                     "mensaje" => "Se eliminó correctamente el usuario $id",
                 ];
-            else:
+            else :
                 $this->mensajes[] = [
                     "tipo" => "danger",
                     "mensaje" => "La eliminación del usuario no se realizó correctamente!! :( <br/>({$resultModelo["error"]})",
@@ -236,11 +234,11 @@ class controlador
             }
             if ((!empty($_POST['password']))) {
                 if (isset($_POST['password'])) {
-                        //poner validador de contraseña
-                        $_POST['password'] = filter_var($_POST['password'], FILTER_SANITIZE_STRING);
-                        $_POST['password'] = trim($_POST["password"]);
-                        $_POST['password'] = htmlspecialchars($_POST["password"]);
-                        $_POST['password'] = stripcslashes($_POST["password"]);
+                    //poner validador de contraseña
+                    $_POST['password'] = filter_var($_POST['password'], FILTER_SANITIZE_STRING);
+                    $_POST['password'] = trim($_POST["password"]);
+                    $_POST['password'] = htmlspecialchars($_POST["password"]);
+                    $_POST['password'] = stripcslashes($_POST["password"]);
                 }
             } else {
                 $error['pass'] = 'La contraseña no puede estar vacia';
@@ -269,7 +267,6 @@ class controlador
                 } else {
                     $error['email'] = 'Correo electronico no válido';
                 }
-
             } else {
                 $error['email'] = 'El campo email no puede estar vacio';
             }
@@ -299,7 +296,6 @@ class controlador
                 } else {
                     $parametrosVistas['tipo'] = 'alert alert-danger text-center';
                     $parametrosVistas['mensaje'] = $resultadoModelo['mensaje'] . ' - No se ha agregado el Usuario';
-
                 }
             }
         }
@@ -355,12 +351,12 @@ class controlador
                 ]);
                 //Analizamos cómo finalizó la operación de registro y generamos un mensaje
                 //indicativo del estado correspondiente
-                if ($resultModelo["correcto"]):
+                if ($resultModelo["correcto"]) :
                     $this->mensajes[] = [
                         "tipo" => "success",
                         "mensaje" => "La entrada se actualizó correctamente!! :)",
                     ];
-                else:
+                else :
                     $this->mensajes[] = [
                         "tipo" => "danger",
                         "mensaje" => "La entrada no pudo actualizarse!! :( <br/>({$resultModelo["error"]})",
@@ -377,7 +373,6 @@ class controlador
             $titulo = $nuevoTitulo;
             $descripcion = $nuevaDescripcion;
             $fecha = $nuevaFecha;
-
         } else { //Estamos rellenando los campos con los valores recibidos del listado
             if (isset($_GET['id']) && (is_numeric($_GET['id']))) {
                 $id = $_GET['id'];
@@ -385,7 +380,7 @@ class controlador
                 $resultModelo = $this->modelo->listausuario($id);
                 //Analizamos si la consulta se realiz´correctamente o no y generamos un
                 //mensaje indicativo
-                if ($resultModelo["correcto"]):
+                if ($resultModelo["correcto"]) :
                     $this->mensajes[] = [
                         "tipo" => "success",
                         "mensaje" => "Los datos del usuario se obtuvieron correctamente!! :)",
@@ -393,7 +388,7 @@ class controlador
                     $titulo = $resultModelo["datos"]["titulo"];
                     $descripcion = $resultModelo["datos"]["descripcion"];
                     $fecha = $resultModelo["datos"]["fecha"];
-                else:
+                else :
                     $this->mensajes[] = [
                         "tipo" => "danger",
                         "mensaje" => "No se pudieron obtener los datos de entrada!! :( <br/>({$resultModelo["error"]})",
@@ -470,7 +465,6 @@ class controlador
                 } else {
                     $_POST['imagen'] = ' ';
                 }
-
             }
         } else {
             $error['usuario'] = 'Debe acceder con su usuario para poder añadir Entrada';
@@ -500,5 +494,4 @@ class controlador
 
         include_once 'vistas/addEntrada.php';
     }
-
 }

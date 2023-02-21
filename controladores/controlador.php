@@ -42,6 +42,52 @@ class controlador
         include_once 'vistas/inicio.php';
     }
 
+    // metodo que valida si un usuario esta registrado en el blog
+    public function login()
+    {
+        $login = false;
+        $parametrosVistas = ['mensajes' => [],];
+        $error = [];
+
+        if (isset($_POST['enviar'])) {
+            if (empty($_POST['usuario'])) {
+                $error['usuario'] = 'Usuario no puede estar vacio';
+            }
+            if (empty($_POST['password'])) {
+                $error['password'] = 'Contraseña no puede estar vacia';
+            }
+            if (empty($error)) {
+                //comprobamos a través de modelo si está en la base de datos
+                $resultadoModelo = $this->modelo->login($_POST['usuario'], $_POST['password']);
+
+                if ($resultadoModelo['correcto']) {
+                    if (empty($resultadoModelo['datos'])) {
+                        $parametrosVistas['mensajes']['tipo'] = 'alert alert-danger text-center';
+                        $parametrosVistas['mensajes']['mensaje'] = "Usuario / constraseña incorrecto";
+
+                    } else {
+                        $login = true;
+                    }
+
+                    //creamos la sesion de usuario para mostrar los datos de dicho usuario
+                    $_SESSION["usuario"] = $resultadoModelo['datos']['nick'];
+                    $_SESSION["id"] = $resultadoModelo['datos']['id'];
+                } else {
+                    $this->mensajes = [
+                        'tipo' => 'alert alert-danger',
+                        'mensaje' => 'Usuario o Contraseña incorrectos',
+                    ];
+                    $parametrosVistas['mensajes'] = $this->mensajes;
+
+                }
+            }
+        } //post acceder
+        if ($login == false) {
+            include 'vistas/login.php';
+        } else {
+            $this->index();
+        }
+    }
     /**
      * Método que obtiene de la base de datos el listado de usuarios y envía dicha
      * infomación a la vista correspondiente para su visualización
@@ -59,26 +105,80 @@ class controlador
         // Si la consulta se realizó correctamente transferimos los datos obtenidos
         // de la consulta del modelo ($resultModelo["datos"]) a nuestro array parámetros
         // ($parametros["datos"]), que será el que le pasaremos a la vista para visualizarlos
-        if ($resultModelo["correcto"]):
+        if ($resultModelo["correcto"]){
             $parametros["datos"] = $resultModelo["datos"];
             //Definimos el mensaje para el alert de la vista de que todo fue correctamente
             $this->mensajes[] = [
                 "tipo" => "success",
                 "mensaje" => "El listado se realizó correctamente",
             ];
-        else:
+        }else{
             //Definimos el mensaje para el alert de la vista de que se produjeron errores al realizar el listado
             $this->mensajes[] = [
                 "tipo" => "danger",
                 "mensaje" => "El listado no pudo realizarse correctamente!! :( <br/>({$resultModelo["error"]})",
             ];
-        endif;
-        //Asignanis al campo 'mensajes' del array de parámetros el valor del atributo
-        //'mensaje', que recoge cómo finalizó la operación:
+        }
         $parametros["mensajes"] = $this->mensajes;
         // Incluimos la vista en la que visualizaremos los datos o un mensaje de error
         include_once 'vistas/listado.php';
     }
+
+    //metodo que lista solo las entradas del usuario que ha iniciado sesion
+    public function listarUsuario()
+    {
+        $parametrosVistas = [
+            'datos' => [],
+            'mensajes' => [],
+        ];
+
+        $resultadoModelo = $this->modelo->listausuario($_SESSION['id']);
+        if ($resultadoModelo['correcto']) {
+            $parametrosVistas['datos'] = $resultadoModelo['datos'];
+            $this->mensajes = [
+                'tipo' => 'alert alert-success text-center',
+                'mensaje' => 'El listado se ha realizado correctamente',
+            ];
+        } else {
+            $this->mensajes = [
+                'tipo' => 'alert alert-danger text-center',
+                'mensaje' => 'El listado no se ha realizado',
+            ];
+        }
+        $parametrosVistas['mensajes'] = $this->mensajes;
+
+        include 'vistas/listarUsuario.php';
+    }
+
+    //metodo que muestra los datos de las entradas divididos por páginas. Vamos a mostrar 4 entradas por paginas.
+    public function paginado()
+    {
+        $parametrosVistas = [
+            'paginas' => 0,
+            'datos' => null,
+            'mensajes' => [],
+        ];
+
+        if (isset($_GET['pag'])) {
+            $resultadoModelo = $this->modelo->paginado($_GET['pag']);
+            if ($resultadoModelo['correcto']) {
+                $parametrosVistas['paginas'] = $resultadoModelo['paginas'];
+                $parametrosVistas['datos'] = $resultadoModelo['datos'];
+                $this->mensajes = [
+                    'tipo' => 'alert alert-success text-center',
+                    'mensaje' => 'El listado se ha realizado correctamente',
+                ];
+            } else {
+                $this->mensajes = [
+                    'tipo' => 'alert alert-danger text-center',
+                    'mensaje' => 'El listado no se ha realizado',
+                ];
+            }
+        }
+        $parametrosVistas['mensajes'] = $this->mensajes;
+        include_once 'vistas/listadoPag.php';
+    }
+
 
     /**
      * Método de la clase controlador que realiza la eliminación de un usuario a
@@ -116,91 +216,94 @@ class controlador
 
     public function adduser()
     {
-        echo "hola";
-        // Array asociativo que almacenará los mensajes de error que se generen por cada campo
-        $errores = array();
-        $id = "";
-        $titulo = "";
-        $descripcion = "";
-        $fecha = "";
-
-        // validar el formulario cuando se envía
-        if ($_SERVER["REQUEST_METHOD"] == "POST") {
-            // validar campo titulo
-            if (empty($_POST["titulo"])) {
-                $errores["titulo"] = "Error: El título es obligatorio";
+        $parametrosVistas = [
+            'tipo' => null,
+            'mensaje' => null,
+        ];
+        $error = [];
+        $datos = [];
+        //Si hemos pulsado en el botón registrar(si hemos enviado datos)
+        if (isset($_POST['registrar'])) {
+            //Validación de los campos del formulario
+            //Comprobamos que no están vacios, sanitizamos, quitamos espacios,caracteres especiales, slashes etc..
+            if (isset($_POST['usuario']) && (!empty($_POST['usuario']))) { //Si se ha recibido datos del campo usuario
+                $_POST['usuario'] = filter_var($_POST['usuario'], FILTER_SANITIZE_STRING);
+                $_POST['usuario'] = trim($_POST["usuario"]);
+                $_POST['usuario'] = htmlspecialchars($_POST["usuario"]);
+                $_POST['usuario'] = stripcslashes($_POST["usuario"]);
             } else {
-                $titulo = $_POST["titulo"];
+                $error['usuario'] = 'El campo usuario no puede estar vacío'; //Añadimos error en caso de usuario no válido
+            }
+            if ((!empty($_POST['password']))) {
+                if (isset($_POST['password'])) {
+                        //poner validador de contraseña
+                        $_POST['password'] = filter_var($_POST['password'], FILTER_SANITIZE_STRING);
+                        $_POST['password'] = trim($_POST["password"]);
+                        $_POST['password'] = htmlspecialchars($_POST["password"]);
+                        $_POST['password'] = stripcslashes($_POST["password"]);
+                }
+            } else {
+                $error['pass'] = 'La contraseña no puede estar vacia';
+            }
+            if (!empty($_POST['nombre'])) {
+                $_POST['nombre'] = filter_var($_POST['nombre'], FILTER_SANITIZE_STRING);
+                $_POST['nombre'] = trim($_POST["nombre"]);
+                $_POST['nombre'] = htmlspecialchars($_POST["nombre"]);
+                $_POST['nombre'] = stripcslashes($_POST["nombre"]);
+            } else {
+                $error['nombre'] = 'El nombre no puede estar vacío';
+            }
+            if (!empty($_POST['apellidos'])) {
+                $_POST['apellidos'] = filter_var($_POST['apellidos'], FILTER_SANITIZE_STRING);
+                $_POST['apellidos'] = trim($_POST["apellidos"]);
+                $_POST['apellidos'] = htmlspecialchars($_POST["apellidos"]);
+                $_POST['apellidos'] = stripcslashes($_POST["apellidos"]);
+            } else {
+                $error['apellidos'] = 'El campo apellido no puede estar vacío';
+            }
+            if (!empty($_POST['email'])) {
+                if (filter_var($_POST["email"], FILTER_VALIDATE_EMAIL)) {
+                    $_POST['email'] = trim($_POST["email"]);
+                    $_POST['email'] = htmlspecialchars($_POST["email"]);
+                    $_POST['email'] = stripcslashes($_POST["email"]);
+                } else {
+                    $error['email'] = 'Correo electronico no válido';
+                }
+
+            } else {
+                $error['email'] = 'El campo email no puede estar vacio';
+            }
+            if (isset($_FILES["imagen"]) && (!empty($_FILES["imagen"]["name"]))) {
+                $ruta = "images/";
+                move_uploaded_file($_FILES["imagen"]["tmp_name"], $ruta . $_FILES["imagen"]['name']);
+                $_POST['imagen'] = $_FILES['imagen']['name'];
+            } else {
+                $_POST['imagen'] = "";
             }
 
-            // validar campo descripción
-            if (empty($_POST["descripcion"])) {
-                $errores["descripcion"] = "Error: La descripción es obligatoria";
-            } else {
-                $descripcion = $_POST["descripcion"];
-            }
+            // Si se han enviado los datos y no existen errores podemos ingresar el usuario
+            if (empty($error)) {
+                $datos = [
+                    'nick' => $_POST['usuario'],
+                    'nombre' => $_POST['nombre'],
+                    'apellidos' => $_POST['apellidos'],
+                    'email' => $_POST['email'],
+                    'password' => $_POST['password'],
+                    'imagen' => $_POST['imagen'],
+                ];
+                //Ejecutamos el método adduser de la clase modelo y lo guardamos en la variable $resultadoModelo
+                $resultadoModelo = $this->modelo->adduser($datos, $_SESSION['id'], $_SESSION['usuario']);
+                if ($resultadoModelo['correcto']) { //Comprobamos que se devuelve true
+                    $parametrosVistas['tipo'] = 'alert alert-success text-center';
+                    $parametrosVistas['mensaje'] = 'Se ha creado el Usuario';
+                } else {
+                    $parametrosVistas['tipo'] = 'alert alert-danger text-center';
+                    $parametrosVistas['mensaje'] = $resultadoModelo['mensaje'] . ' - No se ha agregado el Usuario';
 
-            // validar campo fecha
-            if (empty($_POST["fecha"])) {
-                $errores["fecha"] = "Error: La fecha es obligatoria";
-            } else {
-                $fecha = $_POST["fecha"];
-            }
-
-            // validar campo imagen (opcional)
-            if (!empty($_FILES["imagen"]["name"])) {
-                $imagen = $_FILES["imagen"]["name"];
-                $target_dir = "images/";
-                $target_file = $target_dir . basename($imagen);
-                $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
-                // comprueba si es una imagen válida
-                if ($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg" && $imageFileType != "gif") {
-                    $errores["imagen"] = "Error: Solo se permiten archivos JPG, JPEG, PNG y GIF";
                 }
             }
-            var_dump($errores);
-            // Si no se han producido errores realizamos el registro del usuario
-            if (count($errores) == 0) {
-                $resultModelo = $this->modelo->adduser([
-                    'titulo' => $titulo,
-                    "imagen" => $imagen,
-                    'descripcion' => $descripcion,
-                    'fecha' => $fecha,
-                ]);
-                if ($resultModelo["correcto"]):
-                    $this->mensajes[] = [
-                        "tipo" => "success",
-                        "mensaje" => "La entrada se registró correctamente!! :)",
-                    ];
-                else:
-                    $this->mensajes[] = [
-                        "tipo" => "danger",
-                        "mensaje" => "La entrada no pudo registrarse!! :( <br />({$resultModelo["error"]})",
-                    ];
-                endif;
-            } else {
-                $this->mensajes[] = [
-                    "tipo" => "danger",
-                    "mensaje" => "Datos de registro de entrada erróneos!! :(",
-                ];
-            }
-            var_dump($this->mensajes);
         }
-
-        $parametros = [
-            "tituloventana" => "Base de Datos con PHP y PDO",
-            "datos" => [
-              "id" => isset($id) ? $id : "",
-                "titulo" => isset($titulo) ? $titulo : "",
-                "imagen" => isset($imagen) ? $imagen : "",
-                "descripcion" => isset($descripcion) ? $descripcion : "",
-                "fecha" => isset($fecha) ? $fecha : "",
-            ],
-            "mensajes" => $this->mensajes,
-        ];
-        //Visualizamos la vista asociada al registro de usuarios
-        include_once 'vistas/adduser.php';
-        
+        include 'vistas/adduser.php';
     }
 
     /**
@@ -313,14 +416,89 @@ class controlador
         include_once 'vistas/actuser.php';
     }
 
-    // public function logout($id,$user,$role){
-    //     session_start(); // Activamos el uso de sesiones
-    //     session_unset(); // Libera todas las variables de sesión
-    //     session_destroy(); // Destruimos la sesión
+    public function addEntrada()
+    {
+        $datos = [];
+        $parametrosVistas = [
+            'numero' => null,
+            'categorias' => [],
+            'tipo' => null,
+            'mensaje' => null,
 
-    //    header("Location: ../index.php");
-    //    exit();
+        ];
+        //hacemos una primera consulta para saber el numero de categorias y cuales son
+        $resultadoModelo = $this->modelo->numCategorias();
 
-    // }
+        $parametrosVistas['numero'] = $resultadoModelo['numero'];
+        $parametrosVistas['categorias'] = $resultadoModelo['categorias'];
+
+        //comprobamos que se haya iniciado sesion para poder continuar
+        if (isset($_SESSION['id'])) {
+            if (isset($_POST['ok'])) {
+
+                $error = [];
+
+                if (!empty($_POST['titulo'])) {
+                    $_POST['titulo'] = filter_var($_POST['titulo'], FILTER_SANITIZE_STRING);
+                    $_POST['titulo'] = trim($_POST["titulo"]);
+                    $_POST['titulo'] = htmlspecialchars($_POST["titulo"]);
+                    $_POST['titulo'] = stripcslashes($_POST["titulo"]);
+                } else {
+                    $error['titulo'] = 'El campo Titulo no puede estar vacío';
+                }
+
+                if (!empty($_POST['desc'])) {
+                    $_POST['desc'] = filter_var($_POST['desc'], FILTER_SANITIZE_STRING);
+                    $_POST['desc'] = trim($_POST["desc"]);
+                    $_POST['desc'] = htmlspecialchars($_POST["desc"]);
+                    $_POST['desc'] = stripcslashes($_POST["desc"]);
+                } else {
+                    $error['desc'] = 'El campo Descripcion no puede estar vacío';
+                }
+
+                if (!empty($_POST['fecha'])) {
+                    $fecha = $_POST['fecha'];
+                    if ($fecha < date('d m y')) {
+                        $errores['fecha'] = 'La fecha no puede ser anterior al dia de hoy';
+                    }
+                }
+
+                if (isset($_FILES["imagen"]) && (!empty($_FILES["imagen"]["name"]))) {
+                    $ruta = "img/";
+                    move_uploaded_file($_FILES["imagen"]["tmp_name"], $ruta . $_FILES["imagen"]['name']);
+                    $_POST['imagen'] = $_FILES['imagen']['name'];
+                } else {
+                    $_POST['imagen'] = ' ';
+                }
+
+            }
+        } else {
+            $error['usuario'] = 'Debe acceder con su usuario para poder añadir Entrada';
+        }
+
+        //si hemos pulsado submit y no hay errores podemos guardar los datos en la BD
+        if (isset($_POST['ok']) && empty($error)) {
+            $datos = [
+                'id' => null,
+                'titulo' => $_POST['titulo'],
+                'imagen' => $_POST['imagen'],
+                'descripcion' => $_POST['desc'],
+                'id_categoria' => (int) $_POST['cat'],
+                'id_usuario' => $_SESSION['id'],
+            ];
+            //enviamos los datos a modelo para insertarlos en la base de datos
+            $resultadoModelo = $this->modelo->agregaEntrada($datos, $_SESSION['id'], $_SESSION['usuario']);
+
+            if ($resultadoModelo['correcto']) {
+                $parametrosVistas['tipo'] = 'alert alert-access text-center';
+                $parametrosVistas['mensaje'] = 'Se ha insertado correctamente';
+            } else {
+                $parametrosVistas['tipo'] = 'alert alert-danger text-center';
+                $parametrosVistas['mensaje'] = 'No se ha insertado la Entrada';
+            }
+        }
+
+        include_once 'vistas/addEntrada.php';
+    }
 
 }

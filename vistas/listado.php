@@ -2,7 +2,7 @@
   <head>
     <?php require_once 'includes/head.php';?>
   </head>
-  <body class="cuerpo">
+  <body>
     <div class="container centrar">
       <a href="index.php">Inicio</a>
       <div class="container cuerpo text-center centrar">

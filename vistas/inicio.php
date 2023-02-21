@@ -1,16 +1,11 @@
-
-
 <!DOCTYPE html>
 <html>
-
 <head>
   <?php require_once 'includes/head.php';?>
   <link rel="stylesheet" href="css/misestilos.css">
 </head>
-
 <body class="cuerpo">
-
-  <?php require_once 'C:\xampp\htdocs\tareaBlogServidor\modelos\modelo.php';?>
+  <?php require_once 'modelos\modelo.php';?>
   <!-- NAVBAR -->
   <div class="container-fluid">
     <nav class="navbar navbar-expand-lg bg-light">
@@ -25,36 +20,55 @@
             <li class="nav-item">
               <a class="nav-link active" aria-current="page" href="#">Home</a>
             </li>
-            <li class="nav-item"> <a class="nav-link" href="index.php?accion=listado">Listar entradas</a></li>
-            <li class="nav-item"> <a class="nav-link" href="index.php?accion=adduser"> Añadir entradas</a></li>
-            <form class="d-flex" role="search">
+            <div class="dropdown" style="margin-left: 10px">
+              <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Entradas
+              </button>
+              <ul class="dropdown-menu">
+              <li class="nav-item"> <a class="nav-link" href="index.php?accion=listEntradas">Listar entradas</a></li>
+              <li class="nav-item"> <a class="nav-link" href="index.php?accion=adduser"> Añadir entradas</a></li>
+              </ul>
+            </div>
+            <div class="dropdown" style="margin-left: 20px">
+              <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Categorias
+              </button>
+              <ul class="dropdown-menu">
+              <li class="nav-item"> <a class="nav-link" href="index.php?accion=listCategorias">Listar Categorias</a></li>
+              <li class="nav-item"> <a class="nav-link" href="index.php?accion=addCategorias"> Añadir Categorias</a></li>
+              </ul>
+            </div>
+            <hr>
+            <div class="dropdown" style="margin-left: 20px">
+              <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Usuarios
+              </button>
+              <ul class="dropdown-menu">
+              <li class="nav-item"> <a class="nav-link" href="index.php?accion=listado">Listar usuarios</a></li>
+              <li class="nav-item"> <a class="nav-link" href="index.php?accion=adduser"> Añadir usuarios</a></li>
+              </ul>
+            </div>
+            <form class="d-flex" role="search" style="margin-left: 50px">
               <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
               <button class="btn btn-outline-success" type="submit">Buscar</button>
             </form>
-            <li class="nav-item"> <a class="nav-link" href="../includes/descargarPDF.php">Descargar PDF</a></li>
+            <li class="nav-item" style="margin-left: 400px"> <a class="nav-link" href="../includes/descargarPDF.php">Descargar PDF</a></li>
             <li class="nav-item"> <a class="nav-link" href="vistas/login.php">
-              <?php 
-            session_start();
-            //Si se han enviado datos Y no están vacios 
-            if ((isset($_SESSION['username'])) && (!empty($_SESSION['username']))) {
-              echo $_SESSION["username"].','.$_SESSION["role"];
-            }else{
-            echo 'Login';
-            }?>
-            </a></li>
+              <?php
+                session_start();
+                //Si se han enviado datos Y no están vacios
+                if ((isset($_SESSION['username'])) && (!empty($_SESSION['username']))) {
+                    echo $_SESSION["username"] . ',' . $_SESSION["role"];
+                } else {
+                    echo 'Login';
+                }
+              ?></a>
+            </li>
             <li class="nav-item"> <a class="nav-link" href="vistas/logout.php"> Cerrar Sesion</a></li>
           </ul>
         </div>
       </div>
     </nav>
-  </div>
-  <div class="contenedor">
-    <div class="post">
-      <article>
-        <h2 class="titulo">Titulo el articulo</h2>
-        <p class="fecha">1 Enero de 2016</p>
-      </article>
-    </div>
   </div>
 </body>
 <?php include 'includes/footer.php'?>

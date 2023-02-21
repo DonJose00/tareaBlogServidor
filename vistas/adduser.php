@@ -9,44 +9,39 @@ if (!isset($_SESSION['usuario']) && (isset($_COOKIE['abierta']))) { //Si no exis
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="es">
+<?php require 'includes/head.php';?>
+<body>
+  <?php if (isset($_POST['volver'])) header('Location:index.php'); ?>
+  <div class="container d-flex justify-content-center my-4">
+      <form action="index.php?accion=adduser" method="POST" name="formAddUser" enctype="multipart/form-data">
+          <label for="usuario">Nombre de Usuario: 
+          <input type="text" class="form-control" name="usuario" value="<?php if (isset($_POST['usuario'])) echo $_POST['usuario'];?>">
+          <?php if (isset($_POST['registrar'])) if (isset($error['usuario'])) echo '<div class="alert alert-danger">'.$error['usuario'].'</div>';?></label><br>
 
-<head>
-  <?php require_once 'includes/head.php'; ?>
-</head>
+          <label for="password">Contraseña: 
+          <input type="password" class="form-control" name="password"> 
+          <?php if (isset($_POST['registrar'])) if (isset($error['password'])) echo '<div class="alert alert-danger">'.$error['password'].'</div>';?></label><br>
 
-<body class="cuerpo">
-  <div class="centrar">
-    <div class="container centrar">
-      <a href="index.php">Inicio</a>
-      <div class="container cuerpo text-center centrar">
-        <p>
-        <h2>Añadir nueva entrada al Blog</h2>
-        </p>
-      </div>
-      <?php foreach ($parametros["mensajes"] as $mensaje): ?>
-        <div class="alert alert-<?= $mensaje["tipo"] ?>"><?= $mensaje["mensaje"] ?></div>
-      <?php endforeach; ?>
+          <label for="nombre">Nombre: 
+          <input type="text" class="form-control" name="nombre" value="<?php if (isset($_POST['nombre'])) echo $_POST['nombre'];?>">
+          <?php if (isset($_POST['registrar'])) if (isset($error['nombre'])) echo '<div class="alert alert-danger">'.$error['nombre'].'</div>';?></label><br>
 
-      <div class="addEntradas">
-        <form action="controladores/controlador.php?accion=adduser" method="post" enctype="multipart/form-data">
-          <label for="titulo">Título:</label><br>
-          <input class="form-control" type="text" id="titulo" name="titulo"><br>
+          <label  for="apellidos">Apellidos: 
+          <input type="text" class="form-control" name="apellidos" value="<?php if (isset($_POST['apellidos'])) echo $_POST['apellidos'];?>"> 
+          <?php if (isset($_POST['registrar'])) if (isset($error['apellidos'])) echo '<div class="alert alert-danger">'.$error['apellidos'].'</div>';?></label><br>
 
-          <label for="imagen">Imagen:</label><br>
-          <input class="form-control" type="file" id="imagen" name="imagen"><br>
+          <label  for="email">Email: 
+          <input type="email" class="form-control" name="email" value="<?php if (isset($_POST['email'])) echo $_POST['email'];?>"> 
+          <?php if (isset($_POST['registrar'])) if (isset($error['email'])) echo '<div class="alert alert-danger">'.$error['email'].'</div>';?></label><br>
 
-          <label for="descripcion">Descripción:</label><br>
-          <textarea class="form-control" id="descripcion" name="descripcion"></textarea><br>
-
-          <label for="fecha">Fecha:</label><br>
-          <input type="date" id="fecha" name="fecha"><br>
-          <br>
-          <input type="submit" value="Guardar" name="submit" class="btn btn-success">
-        </form>
-      </div>
-
-    </div>
+          <label for="imagen">Imagen: <input type="file" class="form-control" name="imagen"></label><br>
+            <br>
+          <input type="submit" name="registrar" value="Registrar">
+          <a href="index.php"><button type="button" name="volver" style="margin-left: 10px">Volver</button></a>
+      </form>
+  </div>
+  <?php require 'includes/footer.php'; ?>
 </body>
 
 </html>

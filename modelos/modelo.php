@@ -50,6 +50,40 @@ class modelo {
     endif;
   }
 
+  public function login($usu, $pass)
+  {
+      $parametros = [
+          'correcto' => null,
+          'datos' => [],
+          'error' => null,
+      ];
+
+      try {
+          $conexion = new PDO("mysql:host=$this->host;dbname=$this->baseDatos", $this->user, $this->pass);
+          $conexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+      } catch (PDOException $ex) {
+          echo $ex;
+      }
+      try {
+          $consulta = $conexion->prepare("SELECT * FROM usuarios WHERE nick=(:usuario) AND pass=(:pass)");
+          $consulta->setFetchMode(PDO::FETCH_ASSOC);
+          $consulta->execute(array(":usuario" => $usu, ":pass" => $pass));
+          $parametros['datos'] = $consulta->fetch(PDO::FETCH_ASSOC);
+          if (!empty($parametros['datos'])) {
+              $parametros["correcto"] = true;
+
+              $consulta = $conexion->prepare("INSERT INTO logs(tipo, usuario, nombre) VALUES (:tipo, :usuario,:nombre)");
+              $consulta->execute(array(':tipo' => 'login usuario', ':usuario' => $parametros['datos']['id'], ':nombre' => $parametros['datos']['nick']));
+          } else {
+              $parametros['correcto'] = false;
+          }
+      } catch (Exception $ex) {
+          $parametros["error"] = $ex->getMessage();
+      }
+      return $parametros;
+
+      $conexion = null;
+  }
   /**
    * Función que realiza el listado de todos los usuarios registrados
    * Devuelve un array asociativo con tres campos:
@@ -88,7 +122,7 @@ class modelo {
   public function deluser($id) {
     // La función devuelve un array con dos valores:'correcto', que indica si la
     // operación se realizó correctamente, y 'mensaje', campo a través del cual le
-    // mandamos a la vista el mensaje indicativo del resultado de la operación
+    // mandamos a la vista el mensaje indicativo del resulConsulta de la operación
     $return = [
         "correcto" => FALSE,
         "error" => NULL
@@ -123,39 +157,46 @@ class modelo {
    * @param type $datos
    * @return type
    */
-  public function adduser($datos) {
-    $return = [
-        "correcto" => FALSE,
-        "error" => NULL
-    ];
+  public function adduser($datos, $id, $usuario) {
+    //Array que recogera los datos obtenidos de hacer las operaciones
+    $parametros = [
+      'correcto' => null,
+      'tipo' => null,
+      'mensaje' => null,
+  ];
 
-    try {
-      //Inicializamos la transacción
-      $this->conexion->beginTransaction();
-      //Definimos la instrucción SQL parametrizada 
-      $sql = "INSERT INTO entradas VALUES (:usuario,:categoria,:titulo,:imagen,:descripcion,:fecha)";
-      // Preparamos la consulta...
-      $query = $this->conexion->prepare($sql);
-      // y la ejecutamos indicando los valores que tendría cada parámetro
-      $query->execute([
-        'usuario' => 1,
-        "categoria" => 1,
-        'titulo' => $datos["titulo"],
-        "imagen" => $datos["imagen"],
-        'descripcion' => $datos["descripcion"],
-        'fecha' => $datos["fecha"]
-      ]); //Supervisamos si la inserción se realizó correctamente... 
-      if ($query) {
-        $this->conexion->commit(); // commit() confirma los cambios realizados durante la transacción
-        $return["correcto"] = TRUE;
-      }// o no :(
-    } catch (PDOException $ex) {
-      $this->conexion->rollback(); // rollback() se revierten los cambios realizados durante la transacción
-      $return["error"] = $ex->getMessage();
-      //die();
-    }
+  try {
+      $conexion = new PDO("mysql:host=$this->host;dbname=$this->baseDatos", $this->user, $this->pass);
+      $conexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    return $return;
+      //Comprobamos que no existe ya una cuenta de correo igual
+      $consulta = $conexion->prepare("SELECT email FROM usuarios WHERE email=:correo");
+      $consulta->execute(array(':correo' => $datos['email']));
+      $correoExistente = $consulta->fetch(PDO::FETCH_ASSOC);
+
+      //Si no existe, devuelve false y guardamos el nuevo usuario
+      if (!$correoExistente) {
+          $consulta = $conexion->prepare("INSERT INTO usuarios (id, nick,nombre, apellidos, email, password, imagen) VALUES (:id , :nick, :nombre, :apellidos, :email, :password, :imagen)");
+          $resulConsulta = $consulta->execute(array(':id' => null, ':nick' => $datos['nick'], ':nombre' => $datos['nombre'], ':apellidos' => $datos['apellidos'],':email' => $datos['email'], ':password' => $datos['password'], ':imagen' => $datos['imagen']));
+          if ($resulConsulta) { //Si el resultado es correcto
+              $parametros['correcto'] = true;
+              $parametros['tipo'] = 'alert alert-access';
+              $parametros['mensaje'] = 'Usuario añadido correctamente'; //Mostramos mensaje de exito
+              //Insertamos en la tabla log el registro de inserción
+              // $consulta = $conexion->prepare("INSERT INTO logs(tipo, usuario, nombre) VALUES (:tipo, :usuario,:nombre)");
+              // $consulta->execute(array(':tipo' => 'agregar usuario', ':usuario' => $id, ':nombre' => $usuario));
+          }
+      } else {
+          $parametros['correcto'] = false;
+          $parametros['mensaje'] = 'Ya existe un usuario con el mismo correo';
+      }
+  } catch (Exception $ex) {
+      $parametros['correcto'] = false;
+      $parametros['tipo'] = 'alert alert-danger';
+      $parametros['mensaje'] = $ex;
+  }
+  $conexion = null;
+  return ($parametros);
   }
 
   public function actuser($datos) {

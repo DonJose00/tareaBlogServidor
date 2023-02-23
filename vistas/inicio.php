@@ -55,7 +55,7 @@
             <li class="nav-item" style="margin-left: 400px"> <a class="nav-link" href="../includes/descargarPDF.php">Descargar PDF</a></li>
             <li class="nav-item"> <a class="nav-link" href="vistas/login.php">
               <?php
-                session_start();
+                //session_start();
                 //Si se han enviado datos Y no están vacios
                 if ((isset($_SESSION['username'])) && (!empty($_SESSION['username']))) {
                     echo $_SESSION["username"] . ',' . $_SESSION["role"];

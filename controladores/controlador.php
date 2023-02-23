@@ -64,18 +64,11 @@ class controlador
                  */
                 $resultModelo = $this->modelo->login($_POST['usuario'], $_POST['password']);
 
-<<<<<<< HEAD
                 if ($resultModelo['correcto']) {
                     if (empty($resultModelo['datos'])) {
                         $datosVistas['mensajes']['tipo'] = 'alert alert-danger text-center';
                         $datosVistas['mensajes']['mensaje'] = "Usuario / constraseña incorrecto";
 
-=======
-                if ($resultadoModelo['correcto']) {
-                    if (empty($resultadoModelo['datos'])) {
-                        $parametrosVistas['mensajes']['tipo'] = 'alert alert-danger text-center';
-                        $parametrosVistas['mensajes']['mensaje'] = "Usuario / constraseña incorrecto";
->>>>>>> 30617a78e92771b22b0a539dc3979b85874cd207
                     } else {
                         $login = true;
                     }
@@ -88,12 +81,8 @@ class controlador
                         'tipo' => 'alert alert-danger',
                         'mensaje' => 'Usuario o Contraseña incorrectos',
                     ];
-<<<<<<< HEAD
                     $datosVistas['mensajes'] = $this->mensajes;
 
-=======
-                    $parametrosVistas['mensajes'] = $this->mensajes;
->>>>>>> 30617a78e92771b22b0a539dc3979b85874cd207
                 }
             }
         } //post acceder
@@ -122,7 +111,6 @@ class controlador
         ];
         // Realizamos la consulta y almacenmos los resultados en la variable $resultModelo
         $resultModelo = $this->modelo->listado();
-<<<<<<< HEAD
         /**
          * Si la llamada al método 'listado' devuelve una matriz en la que el elemento 'correcto' es verdadero, 
          * se asigna el valor de la matriz 'datos' devuelta por el método a $datosVistas['datos']. 
@@ -140,39 +128,29 @@ class controlador
              * Este mensaje se establece para ser mostrado en la vista que se cargará al final de la función.
              */
             $this->mensajes[] = ["tipo" => "danger", "mensaje" => "El listado no pudo realizarse correctamente!! :( <br/>({$resultModelo["error"]})"];
-=======
-        // Si la consulta se realizó correctamente transferimos los datos obtenidos
-        // de la consulta del modelo ($resultModelo["datos"]) a nuestro array parámetros
-        // ($parametros["datos"]), que será el que le pasaremos a la vista para visualizarlos
-        if ($resultModelo["correcto"]) {
-            $parametros["datos"] = $resultModelo["datos"];
-            //Definimos el mensaje para el alert de la vista de que todo fue correctamente
-            $this->mensajes[] = [
-                "tipo" => "success",
-                "mensaje" => "El listado se realizó correctamente",
-            ];
-        } else {
-            //Definimos el mensaje para el alert de la vista de que se produjeron errores al realizar el listado
-            $this->mensajes[] = [
-                "tipo" => "danger",
-                "mensaje" => "El listado no pudo realizarse correctamente!! :( <br/>({$resultModelo["error"]})",
-            ];
->>>>>>> 30617a78e92771b22b0a539dc3979b85874cd207
         }
         $datosVistas["mensajes"] = $this->mensajes;
         // Incluimos la vista en la que visualizaremos los datos o un mensaje de error
         include_once 'vistas/listado.php';
     }
 
-    //metodo que lista solo las entradas del usuario que ha iniciado sesion
+    /**
+     * Método que lista las entradas filtrando por usuario, es decir, del usuario que inicia sesión.
+     */
     public function listarUsuario()
     {
+        //array asociativo con dos claves: datos y mensajes. Ambas claves tienen un array vacío como valor por defecto.
         $datosVistas = [
             'datos' => [],
             'mensajes' => [],
         ];
 
         $resultModelo = $this->modelo->listausuario($_SESSION['id']);
+        /**
+         * Si el valor correcto en el array $resultModelo es verdadero, 
+         * se asignan los datos devueltos por el método listausuario a la clave 
+         * datos en $datosVistas. Además, se define un mensaje de éxito en la clave mensajes.
+         */
         if ($resultModelo['correcto']) {
             $datosVistas['datos'] = $resultModelo['datos'];
             $this->mensajes = [
@@ -185,6 +163,7 @@ class controlador
                 'mensaje' => 'El listado no se ha realizado',
             ];
         }
+        //Se asigna el valor de $this->mensajes a la clave mensajes en $datosVistas.
         $datosVistas['mensajes'] = $this->mensajes;
 
         include 'vistas/listarPorUsuario.php';
@@ -336,14 +315,9 @@ class controlador
                     $datosVistas['tipo'] = 'alert alert-success text-center';
                     $datosVistas['mensaje'] = 'Se ha creado el Usuario';
                 } else {
-<<<<<<< HEAD
                     $datosVistas['tipo'] = 'alert alert-danger text-center';
                     $datosVistas['mensaje'] = $resultModelo['mensaje'] . ' - No se ha agregado el Usuario';
 
-=======
-                    $parametrosVistas['tipo'] = 'alert alert-danger text-center';
-                    $parametrosVistas['mensaje'] = $resultadoModelo['mensaje'] . ' - No se ha agregado el Usuario';
->>>>>>> 30617a78e92771b22b0a539dc3979b85874cd207
                 }
             }
         }

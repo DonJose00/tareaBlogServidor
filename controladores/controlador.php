@@ -35,7 +35,7 @@ class controlador
      */
     public function index()
     {
-        $parametros = [
+        $datosVistas = [
             "tituloventana" => "Base de Datos con PHP y PDO",
         ];
         //Mostramos la página de inicio
@@ -46,38 +46,42 @@ class controlador
     public function login()
     {
         $login = false;
-        $parametrosVistas = ['mensajes' => [],];
+        $datosVistas = ['mensajes' => [],];
         $error = [];
 
-        if (isset($_POST['enviar'])) {
-            if (empty($_POST['usuario'])) {
+        if (isset($_POST['enviar'])) { //Si se ha pulsao enviar
+            if (empty($_POST['usuario'])) { //Si el campo usuario está vacio
                 $error['usuario'] = 'Usuario no puede estar vacio';
             }
-            if (empty($_POST['password'])) {
+            if (empty($_POST['password'])) { //Si el campo contraseña está vacio
                 $error['password'] = 'Contraseña no puede estar vacia';
             }
             if (empty($error)) {
-                //comprobamos a través de modelo si está en la base de datos
-                $resultadoModelo = $this->modelo->login($_POST['usuario'], $_POST['password']);
+                /**
+                 * esta línea de código llama a una función llamada "login" en un modelo 
+                 * y le pasa dos parámetros: el nombre de usuario y la contraseña. 
+                 * El resultado de la función se almacena en una variable llamada $resultModelo.
+                 */
+                $resultModelo = $this->modelo->login($_POST['usuario'], $_POST['password']);
 
-                if ($resultadoModelo['correcto']) {
-                    if (empty($resultadoModelo['datos'])) {
-                        $parametrosVistas['mensajes']['tipo'] = 'alert alert-danger text-center';
-                        $parametrosVistas['mensajes']['mensaje'] = "Usuario / constraseña incorrecto";
+                if ($resultModelo['correcto']) {
+                    if (empty($resultModelo['datos'])) {
+                        $datosVistas['mensajes']['tipo'] = 'alert alert-danger text-center';
+                        $datosVistas['mensajes']['mensaje'] = "Usuario / constraseña incorrecto";
 
                     } else {
                         $login = true;
                     }
 
-                    //creamos la sesion de usuario para mostrar los datos de dicho usuario
-                    $_SESSION["usuario"] = $resultadoModelo['datos']['nick'];
-                    $_SESSION["id"] = $resultadoModelo['datos']['id'];
+                    //Creamos la sesion de usuario y de id y asignamos valores obtenidos del array datos
+                    $_SESSION["usuario"] = $resultModelo['datos']['nick'];
+                    $_SESSION["id"] = $resultModelo['datos']['id'];
                 } else {
                     $this->mensajes = [
                         'tipo' => 'alert alert-danger',
                         'mensaje' => 'Usuario o Contraseña incorrectos',
                     ];
-                    $parametrosVistas['mensajes'] = $this->mensajes;
+                    $datosVistas['mensajes'] = $this->mensajes;
 
                 }
             }
@@ -88,38 +92,44 @@ class controlador
             $this->index();
         }
     }
+
     /**
      * Método que obtiene de la base de datos el listado de usuarios y envía dicha
      * infomación a la vista correspondiente para su visualización
      */
     public function listado()
     {
-        // Almacenamos en el array 'parametros[]'los valores que vamos a mostrar en la vista
-        $parametros = [
+        /**
+         * Inicializamos una matriz (array) llamada $datosVistas. 
+         * Esta matriz tiene dos elementos: 'datos' y 'mensajes'. 
+         * Ambos elementos se inicializan con un array vacío.
+         */
+        $datosVistas = [
             "tituloventana" => "Base de Datos con PHP y PDO",
             "datos" => null,
             "mensajes" => [],
         ];
         // Realizamos la consulta y almacenmos los resultados en la variable $resultModelo
         $resultModelo = $this->modelo->listado();
-        // Si la consulta se realizó correctamente transferimos los datos obtenidos
-        // de la consulta del modelo ($resultModelo["datos"]) a nuestro array parámetros
-        // ($parametros["datos"]), que será el que le pasaremos a la vista para visualizarlos
+        /**
+         * Si la llamada al método 'listado' devuelve una matriz en la que el elemento 'correcto' es verdadero, 
+         * se asigna el valor de la matriz 'datos' devuelta por el método a $datosVistas['datos']. 
+         * También se establece un mensaje de éxito (con tipo 'success') en el atributo 'mensajes' de 
+         * la clase actual ($this). Este mensaje se establece para ser mostrado en la vista que se 
+         * cargará al final de la función.
+         */
         if ($resultModelo["correcto"]){
-            $parametros["datos"] = $resultModelo["datos"];
-            //Definimos el mensaje para el alert de la vista de que todo fue correctamente
-            $this->mensajes[] = [
-                "tipo" => "success",
-                "mensaje" => "El listado se realizó correctamente",
-            ];
+            $datosVistas["datos"] = $resultModelo["datos"];
+            $this->mensajes[] = ["tipo" => "success", "mensaje" => "El listado se realizó correctamente"];
         }else{
-            //Definimos el mensaje para el alert de la vista de que se produjeron errores al realizar el listado
-            $this->mensajes[] = [
-                "tipo" => "danger",
-                "mensaje" => "El listado no pudo realizarse correctamente!! :( <br/>({$resultModelo["error"]})",
-            ];
+            /**
+             * Si la llamada al método 'listado' devuelve una matriz en la que el elemento 'correcto' es falso, 
+             * se establece un mensaje de error (con tipo 'danger') en el atributo 'mensajes' de la clase actual ($this). 
+             * Este mensaje se establece para ser mostrado en la vista que se cargará al final de la función.
+             */
+            $this->mensajes[] = ["tipo" => "danger", "mensaje" => "El listado no pudo realizarse correctamente!! :( <br/>({$resultModelo["error"]})"];
         }
-        $parametros["mensajes"] = $this->mensajes;
+        $datosVistas["mensajes"] = $this->mensajes;
         // Incluimos la vista en la que visualizaremos los datos o un mensaje de error
         include_once 'vistas/listado.php';
     }
@@ -127,14 +137,14 @@ class controlador
     //metodo que lista solo las entradas del usuario que ha iniciado sesion
     public function listarUsuario()
     {
-        $parametrosVistas = [
+        $datosVistas = [
             'datos' => [],
             'mensajes' => [],
         ];
 
-        $resultadoModelo = $this->modelo->listausuario($_SESSION['id']);
-        if ($resultadoModelo['correcto']) {
-            $parametrosVistas['datos'] = $resultadoModelo['datos'];
+        $resultModelo = $this->modelo->listausuario($_SESSION['id']);
+        if ($resultModelo['correcto']) {
+            $datosVistas['datos'] = $resultModelo['datos'];
             $this->mensajes = [
                 'tipo' => 'alert alert-success text-center',
                 'mensaje' => 'El listado se ha realizado correctamente',
@@ -145,25 +155,25 @@ class controlador
                 'mensaje' => 'El listado no se ha realizado',
             ];
         }
-        $parametrosVistas['mensajes'] = $this->mensajes;
+        $datosVistas['mensajes'] = $this->mensajes;
 
-        include 'vistas/listarUsuario.php';
+        include 'vistas/listarPorUsuario.php';
     }
 
     //metodo que muestra los datos de las entradas divididos por páginas. Vamos a mostrar 4 entradas por paginas.
     public function paginado()
     {
-        $parametrosVistas = [
+        $datosVistas = [
             'paginas' => 0,
             'datos' => null,
             'mensajes' => [],
         ];
 
         if (isset($_GET['pag'])) {
-            $resultadoModelo = $this->modelo->paginado($_GET['pag']);
-            if ($resultadoModelo['correcto']) {
-                $parametrosVistas['paginas'] = $resultadoModelo['paginas'];
-                $parametrosVistas['datos'] = $resultadoModelo['datos'];
+            $resultModelo = $this->modelo->paginado($_GET['pag']);
+            if ($resultModelo['correcto']) {
+                $datosVistas['paginas'] = $resultModelo['paginas'];
+                $datosVistas['datos'] = $resultModelo['datos'];
                 $this->mensajes = [
                     'tipo' => 'alert alert-success text-center',
                     'mensaje' => 'El listado se ha realizado correctamente',
@@ -175,7 +185,7 @@ class controlador
                 ];
             }
         }
-        $parametrosVistas['mensajes'] = $this->mensajes;
+        $datosVistas['mensajes'] = $this->mensajes;
         include_once 'vistas/listadoPag.php';
     }
 
@@ -216,7 +226,7 @@ class controlador
 
     public function adduser()
     {
-        $parametrosVistas = [
+        $datosVistas = [
             'tipo' => null,
             'mensaje' => null,
         ];
@@ -291,14 +301,14 @@ class controlador
                     'password' => $_POST['password'],
                     'imagen' => $_POST['imagen'],
                 ];
-                //Ejecutamos el método adduser de la clase modelo y lo guardamos en la variable $resultadoModelo
-                $resultadoModelo = $this->modelo->adduser($datos, $_SESSION['id'], $_SESSION['usuario']);
-                if ($resultadoModelo['correcto']) { //Comprobamos que se devuelve true
-                    $parametrosVistas['tipo'] = 'alert alert-success text-center';
-                    $parametrosVistas['mensaje'] = 'Se ha creado el Usuario';
+                //Ejecutamos el método adduser de la clase modelo y lo guardamos en la variable $resultModelo
+                $resultModelo = $this->modelo->adduser($datos, $_SESSION['id'], $_SESSION['usuario']);
+                if ($resultModelo['correcto']) { //Comprobamos que se devuelve true
+                    $datosVistas['tipo'] = 'alert alert-success text-center';
+                    $datosVistas['mensaje'] = 'Se ha creado el Usuario';
                 } else {
-                    $parametrosVistas['tipo'] = 'alert alert-danger text-center';
-                    $parametrosVistas['mensaje'] = $resultadoModelo['mensaje'] . ' - No se ha agregado el Usuario';
+                    $datosVistas['tipo'] = 'alert alert-danger text-center';
+                    $datosVistas['mensaje'] = $resultModelo['mensaje'] . ' - No se ha agregado el Usuario';
 
                 }
             }
@@ -403,7 +413,7 @@ class controlador
         }
         //Preparamos un array con todos los valores que tendremos que rellenar en
         //la vista adduser: título de la página y campos del formulario
-        $parametros = [
+        $datosVistas = [
             "tituloventana" => "Base de Datos con PHP y PDO",
             "datos" => [
                 "titulo" => $titulo,
@@ -419,7 +429,7 @@ class controlador
     public function addEntrada()
     {
         $datos = [];
-        $parametrosVistas = [
+        $datosVistas = [
             'numero' => null,
             'categorias' => [],
             'tipo' => null,
@@ -427,10 +437,10 @@ class controlador
 
         ];
         //hacemos una primera consulta para saber el numero de categorias y cuales son
-        $resultadoModelo = $this->modelo->numCategorias();
+        $resultModelo = $this->modelo->numCategorias();
 
-        $parametrosVistas['numero'] = $resultadoModelo['numero'];
-        $parametrosVistas['categorias'] = $resultadoModelo['categorias'];
+        $datosVistas['numero'] = $resultModelo['numero'];
+        $datosVistas['categorias'] = $resultModelo['categorias'];
 
         //comprobamos que se haya iniciado sesion para poder continuar
         if (isset($_SESSION['id'])) {
@@ -487,14 +497,14 @@ class controlador
                 'id_usuario' => $_SESSION['id'],
             ];
             //enviamos los datos a modelo para insertarlos en la base de datos
-            $resultadoModelo = $this->modelo->agregaEntrada($datos, $_SESSION['id'], $_SESSION['usuario']);
+            $resultModelo = $this->modelo->agregaEntrada($datos, $_SESSION['id'], $_SESSION['usuario']);
 
-            if ($resultadoModelo['correcto']) {
-                $parametrosVistas['tipo'] = 'alert alert-access text-center';
-                $parametrosVistas['mensaje'] = 'Se ha insertado correctamente';
+            if ($resultModelo['correcto']) {
+                $datosVistas['tipo'] = 'alert alert-access text-center';
+                $datosVistas['mensaje'] = 'Se ha insertado correctamente';
             } else {
-                $parametrosVistas['tipo'] = 'alert alert-danger text-center';
-                $parametrosVistas['mensaje'] = 'No se ha insertado la Entrada';
+                $datosVistas['tipo'] = 'alert alert-danger text-center';
+                $datosVistas['mensaje'] = 'No se ha insertado la Entrada';
             }
         }
 

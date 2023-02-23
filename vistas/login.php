@@ -6,7 +6,6 @@
 </head>
 <body>
     <div class="container cuerpo text-center">
-    <a href="../index.php">Inicio</a>
         <p>
         <h2> <img src="../images\formulario.png" width="60px" /> Login de usuario:</h2>
         </p>
@@ -14,7 +13,7 @@
     <div class="container my-3">
         <div class="row">
             <div class="col-sm-12 col-md-4 col-lg-4 col-xl-4 py-4 color-fondo">
-                <form  class="formLogin" action="login_check.php" method="POST" enctype="multipart/form-data">
+                <form  class="formLogin" action="../controladores/controlador.php?accion=login" method="POST" enctype="multipart/form-data">
                     <div class="mb-3">
                         <label for="usuario" class="form-label">User</label>
                         <input type="text" class="form-control" name="usuario">

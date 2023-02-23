@@ -57,8 +57,8 @@
               <?php
                 //session_start();
                 //Si se han enviado datos Y no están vacios
-                if ((isset($_SESSION['username'])) && (!empty($_SESSION['username']))) {
-                    echo $_SESSION["username"] . ',' . $_SESSION["role"];
+                if ((isset($_SESSION['usuario'])) && (!empty($_SESSION['usuario']))) {
+                    echo $_SESSION["usuario"] . ',' . $_SESSION["rol"];
                 } else {
                     echo 'Login';
                 }

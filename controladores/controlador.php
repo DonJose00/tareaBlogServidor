@@ -63,19 +63,27 @@ class controlador
                  * El resultado de la función se almacena en una variable llamada $resultModelo.
                  */
                 $resultModelo = $this->modelo->login($_POST['usuario'], $_POST['password']);
-
                 if ($resultModelo['correcto']) {
-                    if (empty($resultModelo['datos'])) {
-                        $datosVistas['mensajes']['tipo'] = 'alert alert-danger text-center';
-                        $datosVistas['mensajes']['mensaje'] = "Usuario / constraseña incorrecto";
+                    // Comprobar si el usuario es normal o administrador
+                    if ($_POST['usuario'] == 'user' && $_POST['password'] == 'user') {
+                        // Guardar los datos en la sesión
+                        $_SESSION["usuario"] = $resultModelo['datos']['nick'];
+                        $_SESSION["id"] = $resultModelo['datos']['id'];
+                        $_SESSION["rol"] = 'user';
+                        header('Location: ../index.php');
 
-                    } else {
-                        $login = true;
+                    } elseif ($_POST['usuario'] == 'admin' && $_POST['password'] == 'admin') {
+                        // Guardar los datos en la sesión
+                        $_SESSION["usuario"] = $resultModelo['datos']['nick'];
+                        $_SESSION["id"] = $resultModelo['datos']['id'];
+                        $_SESSION["rol"] = 'admin';
+                        header('Location: ../index.php');
+
                     }
-
-                    //Creamos la sesion de usuario y de id y asignamos valores obtenidos del array datos
-                    $_SESSION["usuario"] = $resultModelo['datos']['nick'];
-                    $_SESSION["id"] = $resultModelo['datos']['id'];
+                    //Creamos la sesion de usuario, id y rol y asignamos valores obtenidos del array datos
+                    // $_SESSION["usuario"] = $resultModelo['datos']['nick'];
+                    // $_SESSION["id"] = $resultModelo['datos']['id'];
+                    // $_SESSION["rol"] = $resultModelo['datos']['rol'];
                 } else {
                     $this->mensajes = [
                         'tipo' => 'alert alert-danger',
@@ -92,7 +100,7 @@ class controlador
             $this->index();
         }
     }
-
+    
     /**
      * Método que obtiene de la base de datos el listado de usuarios y envía dicha
      * infomación a la vista correspondiente para su visualización

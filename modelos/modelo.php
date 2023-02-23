@@ -67,21 +67,22 @@ class modelo
         ];
 
         try {
-            $conexion = new PDO("mysql:host=$this->host;port=3307;dbname=$this->baseDatos", $this->user, $this->pass);
+            $conexion = new PDO("mysql:host=$this->host;port=3307;dbname=$this->db", $this->user, $this->pass);
             $conexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } catch (PDOException $ex) {
             echo $ex;
         }
         try {
             /*Se prepara una consulta a la base de datos para buscar un usuario con un nombre de usuario y una contraseña específicos.*/
-            $consulta = $conexion->prepare("SELECT * FROM usuarios WHERE nick=(:usuario) AND pass=(:password)");
+            $consulta = $conexion->prepare("SELECT nick, password, rol FROM usuarios WHERE nick=(:usuario) AND password=(:password)");
             $consulta->setFetchMode(PDO::FETCH_ASSOC);
             $consulta->execute(array(":usuario" => $usu, ":password" => $pass));
             $parametros['datos'] = $consulta->fetch(PDO::FETCH_ASSOC);
             if (!empty($parametros['datos'])) { //Si se han recibido datos
                 $parametros["correcto"] = true; //El mensaje será de exito
-                $consulta = $conexion->prepare("INSERT INTO logs(tipo, usuario, nombre) VALUES (:tipo, :usuario,:nombre)"); //Insertamos en la tabla logs
-                $consulta->execute(array(':tipo' => 'login usuario', ':usuario' => $parametros['datos']['id'], ':nombre' => $parametros['datos']['nick']));
+                $consulta = $conexion->prepare("INSERT INTO logs(usuario, fecha, operaciones) VALUES (:usuario, :fecha, :operaciones)"); //Insertamos en la tabla logs
+                //Le pasamos los datos de la inserción a la tabla logs, cogemos el nick, la fecha del sistema y le decimos que la operación se va a llamar login
+                $consulta->execute(array(':usuario' => $parametros['datos']['nick'], ':fecha' => date("d/m/Y"), ':operaciones' => 'Login de usuario'));
             } else {
                 $parametros['correcto'] = false;
             }
@@ -184,7 +185,7 @@ class modelo
         ];
 
         try {
-            $conexion = new PDO("mysql:host=$this->host;dbname=$this->baseDatos", $this->user, $this->pass);
+            $conexion = new PDO("mysql:host=$this->host;port=3307;dbname=$this->db", $this->user, $this->pass);
             $conexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
             //Comprobamos que no existe ya una cuenta de correo igual
@@ -266,7 +267,7 @@ class modelo
         ];
 
         try {
-            $conexion = new PDO("mysql:host=$this->host;port=3307;dbname=$this->bd", $this->user, $this->pass);
+            $conexion = new PDO("mysql:host=$this->host;port=3307;dbname=$this->db", $this->user, $this->pass);
             $conexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } catch (PDOException $ex) {
             echo $ex;

@@ -11,7 +11,6 @@ require_once 'C:\xampp\htdocs\tareaBlogServidor\modelos\modelo.php';
  */
 class controlador
 {
-
     // El el atributo $modelo es de la 'clase modelo' y será a través del que podremos
     // acceder a los datos y las operaciones de la base de datos desde el controlador
     private $modelo;

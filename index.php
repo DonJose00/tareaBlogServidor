@@ -12,9 +12,7 @@ require_once 'controladores\controlador.php';
 //Definimos un objeto controlador
 $controlador = new controlador();
 
-if (isset($_GET['accion']) && $_GET['accion'] == 'login') {
-    $controlador->login();
-} else if ($_GET && $_GET["accion"]) {
+if ($_GET && $_GET["accion"]) {
     //Sanitizamos los datos que recibamos mediante el GET
     $accion = filter_input(INPUT_GET, "accion", FILTER_SANITIZE_STRING);
     //Verificamos que el objeto controlador que hemos creado implementa el
@@ -24,7 +22,6 @@ if (isset($_GET['accion']) && $_GET['accion'] == 'login') {
     } else {
         $controlador->index(); //Redirigimos a la página de inicio
     }
-
 } else {
     $controlador->index();
 }

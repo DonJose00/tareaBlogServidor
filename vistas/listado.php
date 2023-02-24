@@ -29,8 +29,8 @@
           <tr>
             <td><?=$datosUser["nombre"]?></td>
             <td><?=$datosUser["email"]?></td>
-            <?php if ($datosUser["imagen"] !== null){ ?>
-              <td><img src="fotos/<?=$datosUser['imagen']?>" width="35" /></td>
+            <?php if ($datosUser["imagen-avatar"] !== null){ ?>
+              <td><img src="fotos/<?=$datosUser['imagen-avatar']?>" width="35" /></td>
             <?php }else{ ?>
               <!-- Para mostrar que está vacio -->
               <td>----</td> 

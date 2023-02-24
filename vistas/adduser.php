@@ -37,6 +37,12 @@ if (!isset($_SESSION['usuario']) && (isset($_COOKIE['abierta']))) { //Si no exis
 
           <label for="imagen">Imagen: <input type="file" class="form-control" name="imagen"></label><br>
             <br>
+          <label for="rol">Elige un rol:</label>
+          <select id="rol">
+            <option value="normal">Usuario normal</option>
+            <option value="administrador">Usuario administrador</option>
+          </select>
+          <hr>
           <input type="submit" name="registrar" value="Registrar">
           <a href="index.php"><button type="button" name="volver" style="margin-left: 10px">Volver</button></a>
       </form>

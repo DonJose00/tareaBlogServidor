@@ -74,7 +74,7 @@ class modelo
         }
         try {
             /*Se prepara una consulta a la base de datos para buscar un usuario con un nombre de usuario y una contraseña específicos.*/
-            $consulta = $conexion->prepare("SELECT nick, password, rol FROM usuarios WHERE nick=(:usuario) AND password=(:password)");
+            $consulta = $conexion->prepare("SELECT * FROM usuarios WHERE nick=(:usuario) AND password=(:password)");
             $consulta->setFetchMode(PDO::FETCH_ASSOC);
             $consulta->execute(array(":usuario" => $usu, ":password" => $pass));
             $parametros['datos'] = $consulta->fetch(PDO::FETCH_ASSOC);
@@ -112,7 +112,7 @@ class modelo
             echo $ex;
         }
         try {
-            $consulta = $conexion->prepare("SELECT * FROM entradas");
+            $consulta = $conexion->prepare("SELECT * FROM usuarios");
             $consulta->setFetchMode(PDO::FETCH_ASSOC);
             $resultado = $consulta->execute();
             /**
@@ -132,50 +132,11 @@ class modelo
     }
 
     /**
-     * Método que elimina el usuario cuyo id es el que se le pasa como parámetro
-     * @param $id es un valor numérico. Es el campo clave de la tabla
-     * @return boolean
-     */
-    public function deluser($id)
-    {
-        // La función devuelve un array con dos valores:'correcto', que indica si la
-        // operación se realizó correctamente, y 'mensaje', campo a través del cual le
-        // mandamos a la vista el mensaje indicativo del resulConsulta de la operación
-        $return = [
-            "correcto" => false,
-            "error" => null,
-        ];
-        //Si hemos recibido el id y es un número realizamos el borrado...
-        if ($id && is_numeric($id)) {
-            try {
-                //Inicializamos la transacción
-                $this->conexion->beginTransaction();
-                //Definimos la instrucción SQL parametrizada
-                $sql = "DELETE FROM entradas WHERE id=:id";
-                $query = $this->conexion->prepare($sql);
-                $query->execute(['id' => $id]);
-                //Supervisamos si la eliminación se realizó correctamente...
-                if ($query) {
-                    $this->conexion->commit(); // commit() confirma los cambios realizados durante la transacción
-                    $return["correcto"] = true;
-                } // o no :(
-            } catch (PDOException $ex) {
-                $this->conexion->rollback(); // rollback() se revierten los cambios realizados durante la transacción
-                $return["error"] = $ex->getMessage();
-            }
-        } else {
-            $return["correcto"] = false;
-        }
-
-        return $return;
-    }
-
-    /**
      *
      * @param type $datos
      * @return type
      */
-    public function adduser($datos, $id, $usuario)
+    public function adduser($datos, $usuario)
     {
         //Array que recogera los datos obtenidos de hacer las operaciones
         $parametros = [
@@ -201,9 +162,9 @@ class modelo
                     $parametros['correcto'] = true;
                     $parametros['tipo'] = 'alert alert-access';
                     $parametros['mensaje'] = 'Usuario añadido correctamente'; //Mostramos mensaje de exito
-                    //Insertamos en la tabla log el registro de inserción
-                    // $consulta = $conexion->prepare("INSERT INTO logs(tipo, usuario, nombre) VALUES (:tipo, :usuario,:nombre)");
-                    // $consulta->execute(array(':tipo' => 'agregar usuario', ':usuario' => $id, ':nombre' => $usuario));
+                    $consulta = $conexion->prepare("INSERT INTO logs(usuario, fecha, operaciones) VALUES (:usuario, :fecha, :operaciones)"); //Insertamos en la tabla logs
+                    //Le pasamos los datos de la inserción a la tabla logs, cogemos el nick, la fecha del sistema y le decimos que la operación se va a llamar Insercion de usuario
+                    $consulta->execute(array(':usuario' => $parametros['datos']['nick'], ':fecha' => date("d/m/Y"), ':operaciones' => 'Inserción de usuario'));
                 }
             } else {
                 $parametros['correcto'] = false;
@@ -216,40 +177,6 @@ class modelo
         }
         $conexion = null;
         return ($parametros);
-    }
-
-    public function actuser($datos)
-    {
-        $return = [
-            "correcto" => false,
-            "error" => null,
-        ];
-
-        try {
-            //Inicializamos la transacción
-            $this->conexion->beginTransaction();
-            //Definimos la instrucción SQL parametrizada
-            $sql = "UPDATE usuarios SET nombre= :nombre, email= :email, imagen= :imagen WHERE id=:id";
-
-            $query = $this->conexion->prepare($sql);
-            $query->execute([
-                'id' => $datos["id"],
-                'nombre' => $datos["nombre"],
-                'email' => $datos["email"],
-                'imagen' => $datos["imagen"],
-            ]);
-            //Supervisamos si la inserción se realizó correctamente...
-            if ($query) {
-                $this->conexion->commit(); // commit() confirma los cambios realizados durante la transacción
-                $return["correcto"] = true;
-            } // o no :(
-        } catch (PDOException $ex) {
-            $this->conexion->rollback(); // rollback() se revierten los cambios realizados durante la transacción
-            $return["error"] = $ex->getMessage();
-            //die();
-        }
-
-        return $return;
     }
 
     /**

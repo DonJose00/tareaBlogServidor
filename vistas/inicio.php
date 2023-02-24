@@ -29,15 +29,6 @@
               <li class="nav-item"> <a class="nav-link" href="index.php?accion=adduser"> Añadir entradas</a></li>
               </ul>
             </div>
-            <div class="dropdown" style="margin-left: 20px">
-              <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                Categorias
-              </button>
-              <ul class="dropdown-menu">
-              <li class="nav-item"> <a class="nav-link" href="index.php?accion=listCategorias">Listar Categorias</a></li>
-              <li class="nav-item"> <a class="nav-link" href="index.php?accion=addCategorias"> Añadir Categorias</a></li>
-              </ul>
-            </div>
             <hr>
             <div class="dropdown" style="margin-left: 20px">
               <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">

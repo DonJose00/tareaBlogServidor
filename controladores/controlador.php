@@ -70,34 +70,28 @@ class controlador
                         $_SESSION["usuario"] = $resultModelo['datos']['nick'];
                         $_SESSION["id"] = $resultModelo['datos']['id'];
                         $_SESSION["rol"] = 'user';
-                        header('Location: ../index.php');
-
-                    } elseif ($_POST['usuario'] == 'admin' && $_POST['password'] == 'admin') {
+                        $login = true;
+                    }elseif ($_POST['usuario'] == 'admin' && $_POST['password'] == 'admin') {
                         // Guardar los datos en la sesión
                         $_SESSION["usuario"] = $resultModelo['datos']['nick'];
                         $_SESSION["id"] = $resultModelo['datos']['id'];
                         $_SESSION["rol"] = 'admin';
-                        header('Location: ../index.php');
-
+                        $login = true;
                     }
-                    //Creamos la sesion de usuario, id y rol y asignamos valores obtenidos del array datos
-                    // $_SESSION["usuario"] = $resultModelo['datos']['nick'];
-                    // $_SESSION["id"] = $resultModelo['datos']['id'];
-                    // $_SESSION["rol"] = $resultModelo['datos']['rol'];
+                    
                 } else {
                     $this->mensajes = [
                         'tipo' => 'alert alert-danger',
                         'mensaje' => 'Usuario o Contraseña incorrectos',
                     ];
                     $datosVistas['mensajes'] = $this->mensajes;
-
                 }
             }
         } //post acceder
         if ($login == false) {
             include 'vistas/login.php';
         } else {
-            $this->index();
+            include 'vistas/listEntradas.php';
         }
     }
     
@@ -318,7 +312,7 @@ class controlador
                     'imagen' => $_POST['imagen'],
                 ];
                 //Ejecutamos el método adduser de la clase modelo y lo guardamos en la variable $resultModelo
-                $resultModelo = $this->modelo->adduser($datos, $_SESSION['id'], $_SESSION['usuario']);
+                $resultModelo = $this->modelo->adduser($datos, $_POST['usuario']);
                 if ($resultModelo['correcto']) { //Comprobamos que se devuelve true
                     $datosVistas['tipo'] = 'alert alert-success text-center';
                     $datosVistas['mensaje'] = 'Se ha creado el Usuario';

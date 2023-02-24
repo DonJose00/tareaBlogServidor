@@ -220,4 +220,34 @@ class modelo
         return $parametros; //Devolvemos los datos
     }
 
+    /**
+     * Agrega una nueva entrada a la base de datos y registra la operación en una tabla de registros (logs).
+     */
+    public function agregaEntrada($datos, $id, $usuario)
+    {
+        $parametros = [
+            'correcto' => null,
+            'error' => null,
+        ];
+        try {
+            $conexion = new PDO("mysql:host=$this->host;port=3307;dbname=$this->db", $this->user, $this->pass);
+            $conexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            
+            $consulta = $conexion->prepare("INSERT INTO entradas (id,usuario_id,categoria_id,titulo,imagen,descripcion)
+                                                VALUES (:id, :usuario_id, :categoria_id, :titulo, :imagen, :descripcion)");
+
+            $consulta->execute(array(':id' => $datos['id'], ':usuario_id' => $datos['usuario_id'], ':categoria_id' => $datos['categoria_id'], ':titulo' => $datos['titulo'],
+                ':imagen' => $datos['imagen'], ':descripcion' => $datos['descripcion']));
+
+                $consulta = $conexion->prepare("INSERT INTO logs(usuario, fecha, operaciones) VALUES (:usuario, :fecha, :operaciones)"); //Insertamos en la tabla logs
+                //Le pasamos los datos de la inserción a la tabla logs, cogemos el nick, la fecha del sistema y le decimos que la operación se va a llamar Entrada nueva
+                $consulta->execute(array(':usuario' => $parametros['datos']['nick'], ':fecha' => date("d/m/Y"), ':operaciones' => 'Entrada nueva'));
+        } catch (Exception $ex) {
+            $parametros['correcto'] = false;
+            $parametros['error'] = $ex;
+        }
+        return $parametros;
+        $conexion = null;
+    }
+
 }

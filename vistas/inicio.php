@@ -26,7 +26,7 @@
               </button>
               <ul class="dropdown-menu">
               <li class="nav-item"> <a class="nav-link" href="index.php?accion=listEntradas">Listar entradas</a></li>
-              <li class="nav-item"> <a class="nav-link" href="index.php?accion=adduser"> Añadir entradas</a></li>
+              <li class="nav-item"> <a class="nav-link" href="index.php?accion=addEntradas"> Añadir entradas</a></li>
               </ul>
             </div>
             <hr>

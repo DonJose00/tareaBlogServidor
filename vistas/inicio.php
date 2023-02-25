@@ -20,17 +20,10 @@
             <li class="nav-item">
               <a class="nav-link active" aria-current="page" href="#">Home</a>
             </li>
-            <div class="dropdown" style="margin-left: 10px">
-              <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                Entradas
-              </button>
-              <ul class="dropdown-menu">
               <li class="nav-item"> <a class="nav-link" href="index.php?accion=listEntradas">Listar entradas</a></li>
               <li class="nav-item"> <a class="nav-link" href="index.php?accion=addEntradas"> Añadir entradas</a></li>
-              </ul>
-            </div>
             <hr>
-            <div class="dropdown" style="margin-left: 20px">
+            <!-- <div class="dropdown" style="margin-left: 20px">
               <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                 Usuarios
               </button>
@@ -38,7 +31,7 @@
               <li class="nav-item"> <a class="nav-link" href="index.php?accion=listado">Listar usuarios</a></li>
               <li class="nav-item"> <a class="nav-link" href="index.php?accion=adduser"> Añadir usuarios</a></li>
               </ul>
-            </div>
+            </div> -->
             <form class="d-flex" role="search" style="margin-left: 50px">
               <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
               <button class="btn btn-outline-success" type="submit">Buscar</button>

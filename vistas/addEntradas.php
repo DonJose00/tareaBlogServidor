@@ -15,15 +15,18 @@ if (!isset($_SESSION['usuario']) && (isset($_COOKIE['abierta']))) { //Si no exis
   <?php require_once 'includes/head.php';?>
 </head>
 <body class="cuerpo">
+
   <div class="centrar">
     <div class="container centrar">
       <a href="index.php">Inicio</a>
       <div class="container cuerpo text-center centrar">
         <p><h2>Añadir nueva entrada al Blog</h2></p>
       </div>
-      <?php foreach ($parametros["mensajes"] as $mensaje): ?>
+      <?php 
+      if (isset($datosVistas["mensaje"])) {
+        foreach ($datosVistas["mensaje"] as $mensaje){?>
       <div class="alert alert-<?=$mensaje["tipo"]?>"><?=$mensaje["mensaje"]?></div>
-      <?php endforeach;?>
+      <?php } }?>
       <div class="addEntradas">
         <form action="controladores/controlador.php?accion=addEntrada" method="post" enctype="multipart/form-data">
             <label for="titulo">Título:</label><br>
@@ -32,10 +35,15 @@ if (!isset($_SESSION['usuario']) && (isset($_COOKIE['abierta']))) { //Si no exis
             <input class="form-control" type="file" id="imagen" name="imagen"><br>
             <label for="descripcion">Descripción:</label><br>
             <textarea class="form-control" id="descripcion" name="descripcion"></textarea><br>
-            <label for="fecha">Fecha:</label><br>
-            <input type="date" id="fecha" name="fecha"><br>
             <br>
-            <input type="submit" value="Guardar" name="submit" class="btn btn-success">
+            <select class="form-select" aria-label="Default select example">
+            <?php 
+            if (isset($datosVistas["categorias"])) {
+              foreach ($datosVistas["categorias"] as $categoria){?>
+              <option value="<?php echo $categoria['id']?>"><?php echo $categoria['nombre']?></option>
+            <?php } }?>
+            </select>
+            <input type="submit" value="Guardar" name="enviar" class="btn btn-success">
         </form>
       </div>
     </div>

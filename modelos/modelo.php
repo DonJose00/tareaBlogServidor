@@ -131,99 +131,42 @@ class modelo
         $conexion = null; //Cierre de conexión
     }
 
-    /**
-     *
-     * @param type $datos
-     * @return type
-     */
-    // public function adduser($datos, $usuario)
-    // {
-    //     //Array que recogera los datos obtenidos de hacer las operaciones
-    //     $parametros = [
-    //         'correcto' => null,
-    //         'tipo' => null,
-    //         'mensaje' => null,
-    //     ];
+    public function getCategorias()
+    {
+        $parametros = [
+            'correcto' => null,
+            'error' => null,
+            'categorias' => [],
+        ];
 
-    //     try {
-    //         $conexion = new PDO("mysql:host=$this->host;port=3307;dbname=$this->db", $this->user, $this->pass);
-    //         $conexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        try {
+            $conexion = new PDO("mysql:host=$this->host;port=3307;dbname=$this->db", $this->user, $this->pass);
+            $conexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        } catch (PDOException $ex) {
+            echo $ex;
+        }
+        //ahora nos traemos los nombres de las categorias para mostrarlas en el formulario de nueva entrada
+        try {
+            $consulta = $conexion->prepare("SELECT * FROM categorias");
+            $resultado = $consulta->execute();
 
-    //         //Comprobamos que no existe ya una cuenta de correo igual
-    //         $consulta = $conexion->prepare("SELECT email FROM usuarios WHERE email=:correo");
-    //         $consulta->execute(array(':correo' => $datos['email']));
-    //         $correoExistente = $consulta->fetch(PDO::FETCH_ASSOC);
+            if ($resultado) {
+                $parametros['categorias'] = $consulta->fetchAll(PDO::FETCH_ASSOC);
+            } else {
+                $parametros['correcto'] = false;
+            }
+        } catch (Exception $ex) {
+            $parametros['error'] = $ex;
+        }
 
-    //         //Si no existe, devuelve false y guardamos el nuevo usuario
-    //         if (!$correoExistente) {
-    //             $consulta = $conexion->prepare("INSERT INTO usuarios (id, nick,nombre, apellidos, email, password, imagen) VALUES (:id , :nick, :nombre, :apellidos, :email, :password, :imagen)");
-    //             $resulConsulta = $consulta->execute(array(':id' => null, ':nick' => $datos['nick'], ':nombre' => $datos['nombre'], ':apellidos' => $datos['apellidos'], ':email' => $datos['email'], ':password' => $datos['password'], ':imagen' => $datos['imagen']));
-    //             if ($resulConsulta) { //Si el resultado es correcto
-    //                 $parametros['correcto'] = true;
-    //                 $parametros['tipo'] = 'alert alert-access';
-    //                 $parametros['mensaje'] = 'Usuario añadido correctamente'; //Mostramos mensaje de exito
-    //                 $consulta = $conexion->prepare("INSERT INTO logs(usuario, fecha, operaciones) VALUES (:usuario, :fecha, :operaciones)"); //Insertamos en la tabla logs
-    //                 //Le pasamos los datos de la inserción a la tabla logs, cogemos el nick, la fecha del sistema y le decimos que la operación se va a llamar Insercion de usuario
-    //                 $consulta->execute(array(':usuario' => $parametros['datos']['nick'], ':fecha' => date("d/m/Y"), ':operaciones' => 'Inserción de usuario'));
-    //             }
-    //         } else {
-    //             $parametros['correcto'] = false;
-    //             $parametros['mensaje'] = 'Ya existe un usuario con el mismo correo';
-    //         }
-    //     } catch (Exception $ex) {
-    //         $parametros['correcto'] = false;
-    //         $parametros['tipo'] = 'alert alert-danger';
-    //         $parametros['mensaje'] = $ex;
-    //     }
-    //     $conexion = null;
-    //     return ($parametros);
-    // }
-
-    /**
-     * Función llamada listausuario que recibe un parámetro $id, y luego realiza una consulta
-     * a una base de datos MySQL para obtener todas las datoss que coinciden con el $id
-     * pasado como parámetro. Los resultados se almacenan en un array asociativo llamado $return,
-     * y se devuelve como resultado de la función.
-     */
-    // public function listausuario($id)
-    // {
-    //     $return = [
-    //         "correcto" => false,
-    //         "datos" => null,
-    //         "error" => null,
-    //     ];
-
-    //     try {
-    //         $conexion = new PDO("mysql:host=$this->host;port=3307;dbname=$this->db", $this->user, $this->pass);
-    //         $conexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    //     } catch (PDOException $ex) {
-    //         echo $ex;
-    //     }
-
-    //     try {
-    //       //Listamos todos los usuarios que coincidan con el id pasado por parámtro y lo guardamos en la variable $consulta
-    //         $consulta = $conexion->prepare("SELECT * FROM datoss WHERE id_usuario = $id");
-    //         $resultado = $consulta->execute();
-    //         /**
-    //          * Si la consulta se ejecuta correctamente, se almacenan los resultados en el
-    //          * array $parametros["datos"] y se establece $parametros["correcto"] a true.
-    //          * Si la consulta falla, se captura la excepción y se almacena un mensaje de error en $parametros["error"].
-    //          */
-    //         if ($resultado) {
-    //             $parametros["correcto"] = true;
-    //             $parametros['datos'] = $consulta->fetchAll(PDO::FETCH_ASSOC);
-    //         }
-    //     } catch (Exception $ex) {
-    //         $parametros["error"] = $ex->getMessage();
-    //     }
-    //     $conexion = null; //Cerramos la conexión
-    //     return $parametros; //Devolvemos los datos
-    // }
+        return $parametros;
+        $conexion = null;
+    }
 
     /**
      * Agrega una nueva datos a la base de datos y registra la operación en una tabla de registros (logs).
      */
-    public function agregadatos($datos, $id, $usuario)
+    public function agregaEntrada($datos, $id, $usuario)
     {
         $parametros = [
             'correcto' => null,
@@ -243,7 +186,7 @@ class modelo
             //Insertamos en la tabla logs
             $consulta = $conexion->prepare("INSERT INTO logs(usuario, fecha, operaciones) VALUES (:usuario, :fecha, :operaciones)");
             //Le pasamos los datos de la inserción a la tabla logs, cogemos el nick, la fecha del sistema y le decimos que la operación se va a llamar datos nueva
-            $consulta->execute(array(':usuario' => $parametros['datos']['nick'], ':fecha' => date("d/m/Y"), ':operaciones' => 'datos nueva'));
+            $consulta->execute(array(':usuario' => $parametros['datos']['nick'], ':fecha' => date("d/m/Y"), ':operaciones' => 'Entrada nueva'));
         } catch (Exception $ex) {
             $parametros['correcto'] = false;
             $parametros['error'] = $ex;
@@ -252,7 +195,10 @@ class modelo
         $conexion = null;
     }
 
-    public function deldatos($datos, $id, $usuario)
+    /**
+     * Método que elimina la entrada la cual se reciben sus datos por parámetros
+     */
+    public function delEntrada($datos, $id, $usuario)
     {
         $parametros = [
             'tipo' => null,
@@ -261,20 +207,18 @@ class modelo
         ];
 
         try {
-            $conexion = new PDO("mysql:host=$this->host;port=3307;dbname=$this->db", $this->user, $this->pass);
+            //Conectamos con la bd
+            $conexion = new PDO("mysql:host=$this->host;dbname=$this->baseDatos", $this->user, $this->pass);
             $conexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-            //eliminamos categoria
-            $consulta = $conexion->prepare("DELETE FROM datoss WHERE id = $datos");
+            //Preparamos sentencia y la ejecutamos
+            $consulta = $conexion->prepare("DELETE FROM entradas WHERE id = $datos");
             $resultado = $consulta->execute();
             if ($resultado) {
                 $parametros['correcto'] = true;
                 $parametros['tipo'] = 'alert alert-success text-center';
                 $parametros['mensaje'] = 'La categoría se ha eliminado';
-                //Insertamos en la tabla logs
-                $consulta = $conexion->prepare("INSERT INTO logs(usuario, fecha, operaciones) VALUES (:usuario, :fecha, :operaciones)");
-                //Le pasamos los datos de la inserción a la tabla logs, cogemos el nick y la fecha del sistema
-                $consulta->execute(array(':usuario' => $parametros['datos']['nick'], ':fecha' => date("d/m/Y"), ':operaciones' => 'Eliminamos datos'));
+                $consulta = $conexion->prepare("INSERT INTO logs(tipo, usuario, nombre) VALUES (:tipo, :usuario,:nombre)");
+                $consulta->execute(array(':tipo' => 'elimina entrada', ':usuario' => $id, ':nombre' => $usuario));
             } else {
                 $parametros['correcto'] = false;
                 $parametros['tipo'] = 'alert alert-danger text-center';
@@ -289,6 +233,9 @@ class modelo
         return $parametros;
     }
 
+    /**
+     * Método que actualiza la entrada recibiendo los datos por parámetro
+     */
     public function modEntrada($datos, $id, $usuario)
     {
         $parametros = [

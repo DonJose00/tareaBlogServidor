@@ -21,7 +21,7 @@
               <a class="nav-link active" aria-current="page" href="#">Home</a>
             </li>
               <li class="nav-item"> <a class="nav-link" href="index.php?accion=listEntradas">Listar entradas</a></li>
-              <li class="nav-item"> <a class="nav-link" href="index.php?accion=addEntradas"> Añadir entradas</a></li>
+              <li class="nav-item"> <a class="nav-link" href="index.php?accion=addEntrada"> Añadir entradas</a></li>
             <hr>
             <!-- <div class="dropdown" style="margin-left: 20px">
               <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">

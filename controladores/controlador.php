@@ -293,6 +293,7 @@ class controlador
 
     public function addEntrada()
     {
+        session_start();
         $datos = [];
         $datosVistas = [
             'numero' => null,
@@ -302,9 +303,8 @@ class controlador
 
         ];
         //hacemos una primera consulta para saber el numero de categorias y cuales son
-        $resultModelo = $this->modelo->numCategorias();
+        $resultModelo = $this->modelo->getCategorias();
 
-        $datosVistas['numero'] = $resultModelo['numero'];
         $datosVistas['categorias'] = $resultModelo['categorias'];
 
         //comprobamos que se haya iniciado sesion para poder continuar
@@ -348,6 +348,7 @@ class controlador
                 }
             }
         } else {
+            include_once 'vistas/login.php';
             $error['usuario'] = 'Debe acceder con su usuario para poder añadir Entrada';
         }
 
@@ -356,7 +357,7 @@ class controlador
             $datos = [
                 'id' => null,
                 'usuario_id' => $_SESSION['id'],
-                'categoria_id' => (int) $_POST['cat'],
+                'categoria_id' => (int) $_POST['categorias'],
                 'titulo' => $_POST['titulo'],
                 'imagen' => $_POST['imagen'],
                 'descripcion' => $_POST['desc'],
@@ -368,12 +369,115 @@ class controlador
             if ($resultModelo['correcto']) {
                 $datosVistas['tipo'] = 'alert alert-access text-center';
                 $datosVistas['mensaje'] = 'Se ha insertado correctamente';
+                include_once 'vistas/addEntradas.php';
             } else {
                 $datosVistas['tipo'] = 'alert alert-danger text-center';
                 $datosVistas['mensaje'] = 'No se ha insertado la Entrada';
+                include_once 'vistas/addEntradas.php';
             }
         }
+    }
 
-        include_once 'vistas/addEntrada.php';
+    public function modEntrada()
+    {
+        $parametrosVistas = [
+            'entrada' => [],
+            'categorias' => [],
+            'categoria' => [],
+            'tipo' => null,
+            'mensaje' => null,
+        ];
+
+        //rescatamos la informacion de la entrada a modificar pasada por GET
+
+        if (isset($_GET['id'])) {
+            $resultadoModelo = $this->modelo->buscarEntrada($_GET['id']);
+            if ($resultadoModelo['correcto']) {
+                $parametrosVistas['entrada'] = $resultadoModelo['datos'];
+                $parametrosVistas['categorias'] = $resultadoModelo['categorias'];
+                $parametrosVistas['categoria'] = $resultadoModelo['categoria'];
+            }
+        }
+        //si se ha pulsado actualizar validamos los campos
+        if (isset($_POST['ok'])) {
+
+            $error = [];
+
+            if (!empty($_POST['titulo'])) {
+                $_POST['titulo'] = filter_var($_POST['titulo'], FILTER_SANITIZE_STRING);
+                $_POST['titulo'] = trim($_POST["titulo"]);
+                $_POST['titulo'] = htmlspecialchars($_POST["titulo"]);
+                $_POST['titulo'] = stripcslashes($_POST["titulo"]);
+            } else {
+                $error['titulo'] = 'El campo Titulo no puede estar vacío';
+            }
+
+            if (!empty($_POST['desc'])) {
+                $_POST['desc'] = filter_var($_POST['desc'], FILTER_SANITIZE_STRING);
+                $_POST['desc'] = trim($_POST["desc"]);
+                $_POST['desc'] = htmlspecialchars($_POST["desc"]);
+                $_POST['desc'] = stripcslashes($_POST["desc"]);
+            } else {
+                $error['desc'] = 'El campo Descripcion no puede estar vacío';
+            }
+
+            if (!empty($_POST['fecha'])) {
+                $fecha = $_POST['fecha'];
+                if ($fecha < date('d m y')) {
+                    $errores['fecha'] = 'La fecha no puede ser anterior al dia de hoy';
+                }
+            }
+
+            if (isset($_FILES["imagen"]) && (!empty($_FILES["imagen"]["name"]))) {
+                $ruta = "img/";
+                move_uploaded_file($_FILES["imagen"]["tmp_name"], $ruta . $_FILES["imagen"]['name']);
+                $_POST['imagen'] = $_FILES['imagen']['name'];
+            } else {
+                $_POST['imagen'] = $_POST['imgactual'];
+            }
+
+            //si no hay errores procedemos a actualizar en modelo
+            if (empty($error)) {
+                $datos = [
+                    'id' => $_POST['id'],
+                    'titulo' => $_POST['titulo'],
+                    'imagen' => $_POST['imagen'],
+                    'descripcion' => $_POST['desc'],
+                    'fecha' => $_POST['fecha'],
+
+                ];
+                $resultadoModelo = $this->modelo->modEntrada($datos, $_SESSION['id'], $_SESSION['usuario']);
+
+                if ($resultadoModelo['correcto']) {
+                    $parametrosVistas['tipo'] = 'alert alert-success text-center';
+                    $parametrosVistas['mensaje'] = 'Se ha actualizado la entrada';
+                } else {
+                    $parametrosVistas['tipo'] = 'alert alert-danger text-center';
+                    $parametrosVistas['mensaje'] = $resultadoModelo['mensaje'];
+                }
+            }
+        }
+        include 'vistas/modEntrada.php';
+    }
+
+    public function delEntrada()
+    {
+        $parametrosVistas = [
+            'tipo' => null,
+            'mensaje' => null,
+        ];
+        //utilizamos 2 parametros por GET para borrar unicamente cuando pulsamos el boton Borrar de delCategorias
+        if (isset($_POST['b'])) {
+            //podemos borrar
+            $resultadoModelo = $this->modelo->delEntrada($_POST['id'], $_SESSION['id'], $_SESSION['usuario']);
+            if ($resultadoModelo['correcto']) {
+                $parametrosVistas['tipo'] = 'alert alert-success text-center';
+                $parametrosVistas['mensaje'] = 'Se ha eliminado la entrada seleccionada';
+            } else {
+                $parametrosVistas['tipo'] = 'alert alert-danger text-center';
+                $parametrosVistas['mensaje'] = $resultadoModelo['mensaje'];
+            }
+        }
+        include 'vistas/delEntrada.php';
     }
 }

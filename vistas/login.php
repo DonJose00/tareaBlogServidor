@@ -1,10 +1,16 @@
 <!-- Estructura HTML -->
 <html>
 <head lang="es">
-    <?php require 'includes/head.php'; ?>
+    <?php require 'includes/head.php';?>
     <link rel="stylesheet" href="../css/misestilos.css">
 </head>
 <body>
+
+<?php if (isset($_SESSION['id'])) {
+    echo $_SESSION["id"];
+} else {
+    echo 'No existe el id';
+}?>
     <div class="container cuerpo text-center">
         <p>
         <h2> <img src="../images/formulario.png" width="60px" /> Login de usuario:</h2>

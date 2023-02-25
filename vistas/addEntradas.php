@@ -1,13 +1,3 @@
-<!-- Estructura en PHP -->
-<!-- 
-session_start(); //Activamos el uso de sesiones
-if (!isset($_SESSION['usuario']) && (isset($_COOKIE['abierta']))) { //Si no existe la sesión…
-    //Redirigimos a la página de login con el tipo de error ‘fuera’: que indica que
-    // se trató de acceder directamente a una página sin loguearse previamente
-    header("Location: login.php?error=fuera");
-}
-?> -->
-
 <!DOCTYPE html>
 <html>
 

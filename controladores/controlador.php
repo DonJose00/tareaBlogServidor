@@ -347,10 +347,11 @@ class controlador
                     $_POST['imagen'] = ' ';
                 }
             }
-        } else {
-            include_once 'vistas/login.php';
-            $error['usuario'] = 'Debe acceder con su usuario para poder añadir Entrada';
-        }
+        } 
+        //else {
+        //     include_once 'vistas\login.php';
+        //     $error['usuario'] = 'Debe acceder con su usuario para poder añadir Entrada';
+        // }
 
         //Si hemos enviado los datos y no contienen errores
         if (isset($_POST['enviar']) && empty($error)) {

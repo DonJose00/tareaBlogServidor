@@ -54,6 +54,11 @@
       </div>
     </nav>
   </div>
+  <?php if (isset($_SESSION['id'])) {
+          echo $_SESSION["id"];
+        } else {
+          echo 'No existe el id';
+        }?>
 </body>
 <?php include 'includes/footer.php'?>
 

@@ -1,5 +1,5 @@
 <?php
-
+session_start();
 /**
  * Script que se encarga de redirigir las rutas de los enlaces pulsado en la
  * vista del listado. A él deberá llegar el nombre de la acción y, si fuese

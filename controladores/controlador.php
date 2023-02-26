@@ -45,7 +45,7 @@ class controlador
     // metodo que valida si un usuario esta registrado en el blog
     public function login()
     {
-        session_start();
+        //session_start();
 
         $login = false;
         $datosVistas = ['mensajes' => [],];
@@ -93,7 +93,7 @@ class controlador
         if ($login == false) { //Si el login falla nos vuelve a salir la ventana de login para que nos logueemos
             include 'vistas/login.php';
         } else { //Si nos logueamos bien, incluimos el listado de las entradas
-            include 'vistas/listEntradas.php';
+            header('Location: vistas/listEntradas.php');
         }
     }
     

@@ -67,6 +67,7 @@ class modelo
         ];
 
         try {
+            //Me conecto con la bd
             $conexion = new PDO("mysql:host=$this->host;port=3307;dbname=$this->db", $this->user, $this->pass);
             $conexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } catch (PDOException $ex) {
@@ -76,8 +77,8 @@ class modelo
             /*Se prepara una consulta a la base de datos para buscar un usuario con un nombre de usuario y una contraseña específicos.*/
             $consulta = $conexion->prepare("SELECT * FROM usuarios WHERE nick=(:usuario) AND password=(:password)");
             $consulta->setFetchMode(PDO::FETCH_ASSOC);
-            $consulta->execute(array(":usuario" => $usu, ":password" => $pass));
-            $parametros['datos'] = $consulta->fetch(PDO::FETCH_ASSOC);
+            $consulta->execute(array(":usuario" => $usu, ":password" => $pass)); //Se ejecuta la consulta
+            $parametros['datos'] = $consulta->fetch(PDO::FETCH_ASSOC); //Guardamos los datos de la consulta en el array $parametros
             if (!empty($parametros['datos'])) { //Si se han recibido datos
                 $parametros["correcto"] = true; //El mensaje será de exito
                 $consulta = $conexion->prepare("INSERT INTO logs(usuario, fecha, operaciones) VALUES (:usuario, :fecha, :operaciones)"); //Insertamos en la tabla logs
@@ -168,6 +169,7 @@ class modelo
      */
     public function agregaEntrada($datos, $id, $usuario)
     {
+        session_start();
         $parametros = [
             'correcto' => null,
             'error' => null,

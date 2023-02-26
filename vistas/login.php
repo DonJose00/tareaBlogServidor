@@ -7,9 +7,9 @@
 <body>
 
 <?php if (isset($_SESSION['id'])) {
-    echo $_SESSION["id"];
+    echo $id = $_SESSION["id"];
 } else {
-    echo 'No existe el id';
+    echo "no existe";
 }?>
     <div class="container cuerpo text-center">
         <p>

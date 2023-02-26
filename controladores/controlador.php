@@ -45,6 +45,8 @@ class controlador
     // metodo que valida si un usuario esta registrado en el blog
     public function login()
     {
+        session_start();
+
         $login = false;
         $datosVistas = ['mensajes' => [],];
         $error = [];
@@ -88,9 +90,9 @@ class controlador
                 }
             }
         } //post acceder
-        if ($login == false) {
+        if ($login == false) { //Si el login falla nos vuelve a salir la ventana de login para que nos logueemos
             include 'vistas/login.php';
-        } else {
+        } else { //Si nos logueamos bien, incluimos el listado de las entradas
             include 'vistas/listEntradas.php';
         }
     }
@@ -291,7 +293,7 @@ class controlador
     //     include 'vistas/adduser.php';
     // }
 
-    public function addEntrada()
+    public function agregarEntradas()
     {
         session_start();
         $datos = [];

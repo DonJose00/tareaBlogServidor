@@ -5,7 +5,6 @@
   <?php require_once 'includes/head.php';?>
 </head>
 <body class="cuerpo">
-
   <div class="centrar">
     <div class="container centrar">
       <a href="index.php">Inicio</a>

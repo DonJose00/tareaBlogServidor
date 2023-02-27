@@ -1,8 +1,7 @@
 <?php
 
-
 /**
- * Incluimos el modelo para poder acceder a su clase y a los métodos que implementa 
+ * Incluimos el modelo para poder acceder a su clase y a los métodos que implementa
  */
 require_once 'C:\xampp\htdocs\tareaBlogServidor\modelos\modelo.php';
 /**
@@ -48,7 +47,7 @@ class controlador
         //session_start();
 
         $login = false;
-        $datosVistas = ['mensajes' => [],];
+        $datosVistas = ['mensajes' => []];
         $error = [];
 
         if (isset($_POST['enviar'])) { //Si se ha pulsao enviar
@@ -60,8 +59,8 @@ class controlador
             }
             if (empty($error)) {
                 /**
-                 * esta línea de código llama a una función llamada "login" en un modelo 
-                 * y le pasa dos parámetros: el nombre de usuario y la contraseña. 
+                 * esta línea de código llama a una función llamada "login" en un modelo
+                 * y le pasa dos parámetros: el nombre de usuario y la contraseña.
                  * El resultado de la función se almacena en una variable llamada $resultModelo.
                  */
                 $resultModelo = $this->modelo->login($_POST['usuario'], $_POST['password']);
@@ -73,14 +72,14 @@ class controlador
                         $_SESSION["id"] = $resultModelo['datos']['id'];
                         $_SESSION["rol"] = 'user';
                         $login = true;
-                    }elseif ($_POST['usuario'] == 'admin' && $_POST['password'] == 'admin') {
+                    } elseif ($_POST['usuario'] == 'admin' && $_POST['password'] == 'admin') {
                         // Guardar los datos en la sesión
                         $_SESSION["usuario"] = $resultModelo['datos']['nick'];
                         $_SESSION["id"] = $resultModelo['datos']['id'];
                         $_SESSION["rol"] = 'admin';
                         $login = true;
                     }
-                    
+
                 } else {
                     $this->mensajes = [
                         'tipo' => 'alert alert-danger',
@@ -96,7 +95,7 @@ class controlador
             include 'vistas/listEntradas.php';
         }
     }
-    
+
     /**
      * Método que obtiene de la base de datos el listado de usuarios y envía dicha
      * infomación a la vista correspondiente para su visualización
@@ -104,8 +103,8 @@ class controlador
     public function listado()
     {
         /**
-         * Inicializamos una matriz (array) llamada $datosVistas. 
-         * Esta matriz tiene dos elementos: 'datos' y 'mensajes'. 
+         * Inicializamos una matriz (array) llamada $datosVistas.
+         * Esta matriz tiene dos elementos: 'datos' y 'mensajes'.
          * Ambos elementos se inicializan con un array vacío.
          */
         $datosVistas = [
@@ -116,19 +115,19 @@ class controlador
         // Realizamos la consulta y almacenmos los resultados en la variable $resultModelo
         $resultModelo = $this->modelo->listado();
         /**
-         * Si la llamada al método 'listado' devuelve una matriz en la que el elemento 'correcto' es verdadero, 
-         * se asigna el valor de la matriz 'datos' devuelta por el método a $datosVistas['datos']. 
-         * También se establece un mensaje de éxito (con tipo 'success') en el atributo 'mensajes' de 
-         * la clase actual ($this). Este mensaje se establece para ser mostrado en la vista que se 
+         * Si la llamada al método 'listado' devuelve una matriz en la que el elemento 'correcto' es verdadero,
+         * se asigna el valor de la matriz 'datos' devuelta por el método a $datosVistas['datos'].
+         * También se establece un mensaje de éxito (con tipo 'success') en el atributo 'mensajes' de
+         * la clase actual ($this). Este mensaje se establece para ser mostrado en la vista que se
          * cargará al final de la función.
          */
-        if ($resultModelo["correcto"]){
+        if ($resultModelo["correcto"]) {
             $datosVistas["datos"] = $resultModelo["datos"];
             $this->mensajes[] = ["tipo" => "success", "mensaje" => "El listado se realizó correctamente"];
-        }else{
+        } else {
             /**
-             * Si la llamada al método 'listado' devuelve una matriz en la que el elemento 'correcto' es falso, 
-             * se establece un mensaje de error (con tipo 'danger') en el atributo 'mensajes' de la clase actual ($this). 
+             * Si la llamada al método 'listado' devuelve una matriz en la que el elemento 'correcto' es falso,
+             * se establece un mensaje de error (con tipo 'danger') en el atributo 'mensajes' de la clase actual ($this).
              * Este mensaje se establece para ser mostrado en la vista que se cargará al final de la función.
              */
             $this->mensajes[] = ["tipo" => "danger", "mensaje" => "El listado no pudo realizarse correctamente!! :( <br/>({$resultModelo["error"]})"];
@@ -151,8 +150,8 @@ class controlador
 
     //     $resultModelo = $this->modelo->listausuario($_SESSION['id']);
     //     /**
-    //      * Si el valor correcto en el array $resultModelo es verdadero, 
-    //      * se asignan los datos devueltos por el método listausuario a la clave 
+    //      * Si el valor correcto en el array $resultModelo es verdadero,
+    //      * se asignan los datos devueltos por el método listausuario a la clave
     //      * datos en $datosVistas. Además, se define un mensaje de éxito en la clave mensajes.
     //      */
     //     if ($resultModelo['correcto']) {
@@ -295,7 +294,7 @@ class controlador
 
     public function agregarEntradas()
     {
-        session_start();
+        //session_start();
         $datos = [];
         $datosVistas = [
             'numero' => null,
@@ -304,17 +303,15 @@ class controlador
             'mensaje' => null,
 
         ];
-        //hacemos una primera consulta para saber el numero de categorias y cuales son
+        //hacemos una primera consulta a la tabla categorias y la guardamos en el array $resultModelo
         $resultModelo = $this->modelo->getCategorias();
-
+        //Metemos los datos de las categorias en $datosVistas['categorias']
         $datosVistas['categorias'] = $resultModelo['categorias'];
 
-        //comprobamos que se haya iniciado sesion para poder continuar
+        //Comprobamos que se haya iniciado sesion para poder continuar
         if (isset($_SESSION['id'])) {
             if (isset($_POST['enviar'])) {
-
                 $error = [];
-
                 //Comprobamos que los campos no están vacíos y si lo están, lo añadimos al array error
                 if (!empty($_POST['titulo'])) {
                     $_POST['titulo'] = filter_var($_POST['titulo'], FILTER_SANITIZE_STRING);
@@ -324,23 +321,14 @@ class controlador
                 } else {
                     $error['titulo'] = 'El campo Titulo no puede estar vacío';
                 }
-
-                if (!empty($_POST['desc'])) {
-                    $_POST['desc'] = filter_var($_POST['desc'], FILTER_SANITIZE_STRING);
-                    $_POST['desc'] = trim($_POST["desc"]);
-                    $_POST['desc'] = htmlspecialchars($_POST["desc"]);
-                    $_POST['desc'] = stripcslashes($_POST["desc"]);
+                if (!empty($_POST['descripcion'])) {
+                    $_POST['descripcion'] = filter_var($_POST['descripcion'], FILTER_SANITIZE_STRING);
+                    $_POST['descripcion'] = trim($_POST["descripcion"]);
+                    $_POST['descripcion'] = htmlspecialchars($_POST["descripcion"]);
+                    $_POST['descripcion'] = stripcslashes($_POST["descripcion"]);
                 } else {
-                    $error['desc'] = 'El campo Descripcion no puede estar vacío';
+                    $error['descripcion'] = 'El campo descripcion no puede estar vacío';
                 }
-
-                if (!empty($_POST['fecha'])) {
-                    $fecha = $_POST['fecha'];
-                    if ($fecha < date('d m y')) {
-                        $errores['fecha'] = 'La fecha no puede ser anterior al dia de hoy';
-                    }
-                }
-
                 if (isset($_FILES["imagen"]) && (!empty($_FILES["imagen"]["name"]))) {
                     $ruta = "images/";
                     move_uploaded_file($_FILES["imagen"]["tmp_name"], $ruta . $_FILES["imagen"]['name']);
@@ -348,36 +336,32 @@ class controlador
                 } else {
                     $_POST['imagen'] = ' ';
                 }
+                //Si no contienen errores
+                if (empty($error)) {
+                    //Metemos la información en un array llamado $datos
+                    $datos = [
+                        'id' => null,
+                        'usuario_id' => $_SESSION['id'],
+                        'categoria_id' => $datosVistas['categorias']['id'],
+                        'titulo' => $_POST['titulo'],
+                        'imagen' => $_POST['imagen'],
+                        'descripcion' => $_POST['descripcion'],
+                    ];
+                    //enviamos los datos a modelo para insertarlos en la base de datos
+                    $resultModelo = $this->modelo->agregaEntrada($datos);
+                    if ($resultModelo['correcto']) {
+                        $datosVistas['tipo'] = 'alert alert-access text-center';
+                        $datosVistas['mensaje'] = 'Se ha insertado correctamente';
+                        include_once 'index.php';
+                    } else {
+                        $datosVistas['tipo'] = 'alert alert-danger text-center';
+                        $datosVistas['mensaje'] = 'No se ha podido insertar la Entrada correctamente';
+                    }
+                }
             }
-        } 
-        //else {
-        //     include_once 'vistas\login.php';
-        //     $error['usuario'] = 'Debe acceder con su usuario para poder añadir Entrada';
-        // }
-
-        //Si hemos enviado los datos y no contienen errores
-        if (isset($_POST['enviar']) && empty($error)) {
-            $datos = [
-                'id' => null,
-                'usuario_id' => $_SESSION['id'],
-                'categoria_id' => (int) $_POST['categorias'],
-                'titulo' => $_POST['titulo'],
-                'imagen' => $_POST['imagen'],
-                'descripcion' => $_POST['desc'],
-                
-            ];
-            //enviamos los datos a modelo para insertarlos en la base de datos
-            $resultModelo = $this->modelo->agregaEntrada($datos, $_SESSION['id'], $_SESSION['usuario']);
-
-            if ($resultModelo['correcto']) {
-                $datosVistas['tipo'] = 'alert alert-access text-center';
-                $datosVistas['mensaje'] = 'Se ha insertado correctamente';
-                include_once 'vistas/addEntradas.php';
-            } else {
-                $datosVistas['tipo'] = 'alert alert-danger text-center';
-                $datosVistas['mensaje'] = 'No se ha insertado la Entrada';
-                include_once 'vistas/addEntradas.php';
-            }
+        } else {
+            include_once 'vistas\login.php';
+            $error['usuario'] = 'Debe acceder con su usuario para poder añadir Entrada';
         }
     }
 
@@ -415,13 +399,13 @@ class controlador
                 $error['titulo'] = 'El campo Titulo no puede estar vacío';
             }
 
-            if (!empty($_POST['desc'])) {
-                $_POST['desc'] = filter_var($_POST['desc'], FILTER_SANITIZE_STRING);
-                $_POST['desc'] = trim($_POST["desc"]);
-                $_POST['desc'] = htmlspecialchars($_POST["desc"]);
-                $_POST['desc'] = stripcslashes($_POST["desc"]);
+            if (!empty($_POST['descripcion'])) {
+                $_POST['descripcion'] = filter_var($_POST['descripcion'], FILTER_SANITIZE_STRING);
+                $_POST['descripcion'] = trim($_POST["descripcion"]);
+                $_POST['descripcion'] = htmlspecialchars($_POST["descripcion"]);
+                $_POST['descripcion'] = stripcslashes($_POST["descripcion"]);
             } else {
-                $error['desc'] = 'El campo Descripcion no puede estar vacío';
+                $error['descripcion'] = 'El campo descripcionripcion no puede estar vacío';
             }
 
             if (!empty($_POST['fecha'])) {
@@ -445,7 +429,7 @@ class controlador
                     'id' => $_POST['id'],
                     'titulo' => $_POST['titulo'],
                     'imagen' => $_POST['imagen'],
-                    'descripcion' => $_POST['desc'],
+                    'descripcionripcion' => $_POST['descripcion'],
                     'fecha' => $_POST['fecha'],
 
                 ];

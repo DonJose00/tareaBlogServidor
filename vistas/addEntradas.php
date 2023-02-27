@@ -29,7 +29,7 @@
             <?php 
             if (isset($datosVistas["categorias"])) {
               foreach ($datosVistas["categorias"] as $categoria){?>
-              <option value="<?php echo $categoria['id']?>"><?php echo $categoria['nombre']?></option>
+              <option value="<?php echo $categoria['id']?>" name="categorias"><?php echo $categoria['nombre']?></option>
             <?php } }?>
             </select>
             <input type="submit" value="Guardar" name="enviar" class="btn btn-success">

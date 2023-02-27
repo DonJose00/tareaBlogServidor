@@ -167,7 +167,7 @@ class modelo
     /**
      * Agrega una nueva datos a la base de datos y registra la operación en una tabla de registros (logs).
      */
-    public function agregaEntrada($datos, $id, $usuario)
+    public function agregaEntrada($datos)
     {
         session_start();
         $parametros = [
@@ -178,17 +178,16 @@ class modelo
             $conexion = new PDO("mysql:host=$this->host;port=3307;dbname=$this->db", $this->user, $this->pass);
             $conexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-            //Preparamos la consulta
-            $consulta = $conexion->prepare("INSERT INTO datoss (id,usuario_id,categoria_id,titulo,imagen,descripcion)
-                                                VALUES (:id, :usuario_id, :categoria_id, :titulo, :imagen, :descripcion)");
-            //La ejecutamos
+            //Preparamos la sentencia sql para insertar en la tabla entradas
+            $consulta = $conexion->prepare("INSERT INTO entradas VALUES (:id, :usuario_id, :categoria_id, :titulo, :imagen, :descripcion)");
+            //Ejecutamos la sentencia sql insert
             $consulta->execute(array(':id' => $datos['id'], ':usuario_id' => $datos['usuario_id'], ':categoria_id' => $datos['categoria_id'], ':titulo' => $datos['titulo'],
                 ':imagen' => $datos['imagen'], ':descripcion' => $datos['descripcion']));
 
-            //Insertamos en la tabla logs
-            $consulta = $conexion->prepare("INSERT INTO logs(usuario, fecha, operaciones) VALUES (:usuario, :fecha, :operaciones)");
+            //Insertamos en la tabla logs para tener un registro
+            $consulta = $conexion->prepare("INSERT INTO logs VALUES (:usuario, :fecha, :operaciones)");
             //Le pasamos los datos de la inserción a la tabla logs, cogemos el nick, la fecha del sistema y le decimos que la operación se va a llamar datos nueva
-            $consulta->execute(array(':usuario' => $parametros['datos']['nick'], ':fecha' => date("d/m/Y"), ':operaciones' => 'Entrada nueva'));
+            $consulta->execute(array(':usuario' => $datos['usuario_id'], ':fecha' => date("d/m/Y"), ':operaciones' => 'Entrada nueva'));
         } catch (Exception $ex) {
             $parametros['correcto'] = false;
             $parametros['error'] = $ex;

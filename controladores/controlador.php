@@ -93,7 +93,7 @@ class controlador
         if ($login == false) { //Si el login falla nos vuelve a salir la ventana de login para que nos logueemos
             include 'vistas/login.php';
         } else { //Si nos logueamos bien, incluimos el listado de las entradas
-            header('Location: vistas/listEntradas.php');
+            include 'vistas/listEntradas.php';
         }
     }
     
